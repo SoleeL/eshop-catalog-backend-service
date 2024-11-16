@@ -1,5 +1,4 @@
 ﻿using Catalog.Infrastructure.Persistence;
-using Catalog.Persistence;
 
 namespace Catalog.Infrastructure.Idempotency;
 

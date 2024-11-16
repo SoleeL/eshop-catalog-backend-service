@@ -1,4 +1,4 @@
-using Catalog.Persistence.Seed;
+using Catalog.Infrastructure.Persistence.Seed;
 
 namespace Catalog.Infrastructure.Persistence;
 

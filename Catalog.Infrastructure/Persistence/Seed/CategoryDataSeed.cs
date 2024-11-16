@@ -1,8 +1,7 @@
 using System.Text.Json;
 using Catalog.Domain.Entities;
-using Catalog.Infrastructure.Persistence;
 
-namespace Catalog.Persistence.Seed;
+namespace Catalog.Infrastructure.Persistence.Seed;
 
 public static class CategoryDataSeed
 {

@@ -1,5 +1,5 @@
 using Catalog.Domain.Entities;
-using Catalog.Persistence.Configurations;
+using Catalog.Infrastructure.Persistence.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 

@@ -2,7 +2,7 @@ using Catalog.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Catalog.Persistence.Configurations;
+namespace Catalog.Infrastructure.Persistence.Configurations;
 
 public class TypeEntityTypeConfiguration : IEntityTypeConfiguration<TypeEntity>
 {

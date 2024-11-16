@@ -1,7 +1,7 @@
 using Catalog.Domain.Entities;
 using Catalog.Domain.Repositories;
 
-namespace Catalog.Persistence.Repositories;
+namespace Catalog.Infrastructure.Persistence.Repositories;
 
 public class ProductRepository: IProductRepository
 {

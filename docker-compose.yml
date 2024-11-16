@@ -1,0 +1,18 @@
+services: 
+  eshop-catalog-backend-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      ESHOP_CATALOG_DATABASE_HOST: ${ESHOP_CATALOG_DATABASE_HOST}
+      ESHOP_CATALOG_DATABASE_DB: ${ESHOP_CATALOG_DATABASE_DB}
+      ESHOP_CATALOG_DATABASE_USER: ${ESHOP_CATALOG_DATABASE_USER}
+      ESHOP_CATALOG_DATABASE_PASSWORD: ${ESHOP_CATALOG_DATABASE_PASSWORD}
+    networks:
+      - eshop-network
+    ports:
+      - "8080:8080"
+
+networks:
+  eshop-network:
+    external: true
