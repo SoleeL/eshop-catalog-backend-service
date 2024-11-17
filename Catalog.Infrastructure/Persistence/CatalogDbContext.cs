@@ -16,14 +16,10 @@ public class CatalogDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // builder.HasPostgresExtension("vector");
         modelBuilder.ApplyConfiguration(new BrandEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new CategoryEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new ProductEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new TypeEntityTypeConfiguration());
-
-        // Add the outbox table to this context
-        // builder.UseIntegrationEventLogs();
         
         base.OnModelCreating(modelBuilder);
     }

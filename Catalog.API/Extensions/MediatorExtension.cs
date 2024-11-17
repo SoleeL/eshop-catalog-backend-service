@@ -1,6 +1,7 @@
 using Catalog.Application.Commands.Brands;
 using Catalog.Application.DTOs;
 using Catalog.Application.DTOs.Bases;
+using Catalog.Application.Queries.Brands;
 using MediatR;
 
 namespace Catalog.API.Extensions;
@@ -14,5 +15,6 @@ public static class MediatorExtension
         
         // Agregar interpretes
         builder.Services.AddTransient<IRequestHandler<CreateBrandCommand, BaseResponseDto<BrandResponseDto>>, CreateBrandCommandHandler>();
+        builder.Services.AddTransient<IRequestHandler<GetAllBrandsQuery, BaseResponseDto<IEnumerable<BrandResponseDto>>>, GetAllBrandsQueryHandler>();
     }
 }

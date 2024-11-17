@@ -16,7 +16,12 @@
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:5257",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ESHOP_CATALOG_DATABASE_HOST": "localhost",
+        "ESHOP_CATALOG_DATABASE_PORT": "5433",
+        "ESHOP_CATALOG_DATABASE_DB": "eshop-catalog-database",
+        "ESHOP_CATALOG_DATABASE_USER": "admin",
+        "ESHOP_CATALOG_DATABASE_PASSWORD": "admin123"
       }
     },
     "https": {
@@ -26,7 +31,12 @@
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7169;http://localhost:5257",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ESHOP_CATALOG_DATABASE_HOST": "localhost",
+        "ESHOP_CATALOG_DATABASE_PORT": "5433",
+        "ESHOP_CATALOG_DATABASE_DB": "eshop-catalog-database",
+        "ESHOP_CATALOG_DATABASE_USER": "admin",
+        "ESHOP_CATALOG_DATABASE_PASSWORD": "admin123"
       }
     },
     "IIS Express": {

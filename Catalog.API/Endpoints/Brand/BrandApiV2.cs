@@ -33,7 +33,7 @@ public static class BrandApiV2
             "Sending command: {CommandName} - {nameProperty}: {CommandId}",
             brandCreateDto.GetGenericTypeName(), nameof(brandCreateDto.Name), brandCreateDto.Name);
         
-        CreateBrandCommand createBrandCommand = new CreateBrandCommand(brandCreateDto.Name);
+        CreateBrandCommand createBrandCommand = new CreateBrandCommand(brandCreateDto.Name, brandCreateDto.Description);
 
         // README: Implementando creacion de marca utilizando idempotencia a traves del IdentifiedCommand
         IdentifiedCommand<CreateBrandCommand, BaseResponseDto<BrandResponseDto>> requestCreateBrand =

@@ -1,5 +1,6 @@
 using Catalog.Application.DTOs;
 using Catalog.Application.DTOs.Bases;
+using Catalog.Application.Exceptions;
 using Catalog.Application.Mappers;
 using Catalog.Domain;
 using Catalog.Domain.Entities;
@@ -25,7 +26,7 @@ public class CreateBrandCommandHandler : IRequestHandler<CreateBrandCommand, Bas
         
         await _unitOfWork.BeginTransactionAsync(cancellationToken);
         // BUG: Si el host de la db esta caida o no alcanzable, esto devuelve informacion innecesaria al usuario
-        
+
         try
         {
             // Crear la entidad BrandEntity
@@ -43,12 +44,18 @@ public class CreateBrandCommandHandler : IRequestHandler<CreateBrandCommand, Bas
             // Confirmar la transacción
             await _unitOfWork.CommitAsync(cancellationToken);
 
+            if (brandEntity.Id == Guid.Empty) throw new InvalidEntityException("Brand could not be created. Please try again.");
+
             // Mapear la entidad a un DTO de respuesta
             BrandResponseDto brandResponseDto = CatalogMapper.Mapper.Map<BrandResponseDto>(brandEntity);
 
             baseResponseDto.Data = brandResponseDto;
-            
-            // Retornar el resultado
+            return baseResponseDto;
+        }
+        catch (InvalidEntityException exception)
+        {
+            baseResponseDto.Succcess = false;
+            baseResponseDto.Message = exception.Message;
             return baseResponseDto;
         }
         catch (Exception exception)

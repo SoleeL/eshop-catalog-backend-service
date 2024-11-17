@@ -4,9 +4,8 @@ namespace Catalog.Domain.Entities;
 
 public class BrandEntity : BaseEntity
 {
-    [Required]
-    [MaxLength(100)]
     public string Name { get; set; }
+    public string? Description { get; set; }
 
     public virtual ICollection<ProductEntity> Products { get; set; }
 }

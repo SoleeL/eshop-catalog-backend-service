@@ -7,9 +7,11 @@ namespace Catalog.Application.Commands.Brands;
 public class CreateBrandCommand : IRequest<BaseResponseDto<BrandResponseDto>>
 {
     public string Name { get; set; }
+    public string Description { get; set; }
     
-    public CreateBrandCommand(string name)
+    public CreateBrandCommand(string name, string description)
     {
         Name = name;
+        Description = description;
     }
 }

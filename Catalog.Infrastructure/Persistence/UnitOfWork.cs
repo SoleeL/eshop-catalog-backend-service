@@ -17,11 +17,23 @@ public class UnitOfWork : IUnitOfWork
     {
         _dbContextTransaction = await _catalogDbContext.Database.BeginTransactionAsync(cancellationToken);
     }
-
+    
     public async Task CommitAsync(CancellationToken cancellationToken)
     {
-        await _dbContextTransaction.CommitAsync(cancellationToken);
-        await _dbContextTransaction.DisposeAsync();
+        try
+        {
+            await _catalogDbContext.SaveChangesAsync(cancellationToken);
+            await _dbContextTransaction.CommitAsync(cancellationToken);
+        }
+        catch
+        {
+            await _dbContextTransaction.RollbackAsync(cancellationToken);
+            throw;
+        }
+        finally
+        {
+            await _dbContextTransaction.DisposeAsync();
+        }
     }
 
     public async Task RollbackAsync(CancellationToken cancellationToken)
