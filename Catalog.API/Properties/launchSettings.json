@@ -17,11 +17,15 @@
       "applicationUrl": "http://localhost:5257",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
+        
         "ESHOP_CATALOG_DATABASE_HOST": "localhost",
-        "ESHOP_CATALOG_DATABASE_PORT": "5433",
+        "ESHOP_CATALOG_DATABASE_PORT": "5432",
+        "ESHOP_CATALOG_DATABASE_REPLICA_PORT": "5433",
         "ESHOP_CATALOG_DATABASE_DB": "eshop-catalog-database",
-        "ESHOP_CATALOG_DATABASE_USER": "admin",
-        "ESHOP_CATALOG_DATABASE_PASSWORD": "admin123"
+        "ESHOP_CATALOG_DATABASE_USER_READ_WRITE": "user_read_write",
+        "ESHOP_CATALOG_DATABASE_USER_READ_WRITE_PASSWORD": "user_read_write_123",
+        "ESHOP_CATALOG_DATABASE_USER_READ_ONLY": "user_read_only",
+        "ESHOP_CATALOG_DATABASE_USER_READ_ONLY_PASSWORD": "user_read_only_123"
       }
     },
     "https": {
@@ -32,11 +36,15 @@
       "applicationUrl": "https://localhost:7169;http://localhost:5257",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
+
         "ESHOP_CATALOG_DATABASE_HOST": "localhost",
-        "ESHOP_CATALOG_DATABASE_PORT": "5433",
+        "ESHOP_CATALOG_DATABASE_PORT": "5432",
+        "ESHOP_CATALOG_DATABASE_REPLICA_PORT": "5433",
         "ESHOP_CATALOG_DATABASE_DB": "eshop-catalog-database",
-        "ESHOP_CATALOG_DATABASE_USER": "admin",
-        "ESHOP_CATALOG_DATABASE_PASSWORD": "admin123"
+        "ESHOP_CATALOG_DATABASE_USER_READ_WRITE": "user_read_write",
+        "ESHOP_CATALOG_DATABASE_USER_READ_WRITE_PASSWORD": "user_read_write_123",
+        "ESHOP_CATALOG_DATABASE_USER_READ_ONLY": "user_read_only",
+        "ESHOP_CATALOG_DATABASE_USER_READ_ONLY_PASSWORD": "user_read_only_123"
       }
     },
     "IIS Express": {

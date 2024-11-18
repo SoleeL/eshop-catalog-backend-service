@@ -16,11 +16,13 @@ public class BrandRepository : IBrandRepository
 
     public async Task AddAsync(BrandEntity brandEntity)
     {
+        this._catalogDbContext.UsePrimaryConnection();
         await this._catalogDbContext.Brand.AddAsync(brandEntity);
     }
     
     public async Task<IEnumerable<BrandEntity>> GetPageAsync(int page, int size)
     {
+        this._catalogDbContext.UseReplicaConnection();
         IQueryable<BrandEntity> queryable = _catalogDbContext.Brand.AsNoTracking().AsQueryable();
         return await queryable.PageBy(page, size).ToListAsync();
     }

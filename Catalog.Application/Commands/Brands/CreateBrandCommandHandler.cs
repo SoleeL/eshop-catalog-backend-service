@@ -9,6 +9,18 @@ using MediatR;
 
 namespace Catalog.Application.Commands.Brands;
 
+public class CreateBrandCommand : IRequest<BaseResponseDto<BrandResponseDto>>
+{
+    public string Name { get; set; }
+    public string Description { get; set; }
+    
+    public CreateBrandCommand(string name, string description)
+    {
+        Name = name;
+        Description = description;
+    }
+}
+
 public class CreateBrandCommandHandler : IRequestHandler<CreateBrandCommand, BaseResponseDto<BrandResponseDto>>
 {
     private readonly IBrandRepository _brandRepository;
@@ -32,7 +44,8 @@ public class CreateBrandCommandHandler : IRequestHandler<CreateBrandCommand, Bas
             // Crear la entidad BrandEntity
             BrandEntity brandEntity = new BrandEntity
             {
-                Name = request.Name
+                Name = request.Name,
+                Description = request.Description
             };
 
             // Agregar la nueva marca a la base de datos
