@@ -7,38 +7,39 @@ using MediatR;
 
 namespace Catalog.Application.Queries.Brands;
 
-public class GetAllBrandsQuery : IRequest<BaseResponseDto<IEnumerable<BrandResponseDto>>>
+public class GetPageBrandsQuery : IRequest<(BaseResponseDto<IEnumerable<BrandResponseDto>>, int)>
 {
     public int Page { get; set; }
     public int Size { get; set; }
 
-    public GetAllBrandsQuery(int page, int size)
+    public GetPageBrandsQuery(int page, int size)
     {
         Page = page;
         Size = size;
     }
 }
 
-public class GetAllBrandsQueryHandler : IRequestHandler<GetAllBrandsQuery, BaseResponseDto<IEnumerable<BrandResponseDto>>>
+public class GetPageBrandsQueryHandler : IRequestHandler<GetPageBrandsQuery, (BaseResponseDto<IEnumerable<BrandResponseDto>>, int)>
 {
     private readonly IBrandRepository _brandRepository;
 
-    public GetAllBrandsQueryHandler(IBrandRepository brandRepository)
+    public GetPageBrandsQueryHandler(IBrandRepository brandRepository)
     {
         _brandRepository = brandRepository;
     }
 
-    public async Task<BaseResponseDto<IEnumerable<BrandResponseDto>>> Handle(
-        GetAllBrandsQuery request,
+    public async Task<(BaseResponseDto<IEnumerable<BrandResponseDto>>, int)> Handle(
+        GetPageBrandsQuery request,
         CancellationToken cancellationToken
     )
     {
         BaseResponseDto<IEnumerable<BrandResponseDto>> baseResponseDto = new BaseResponseDto<IEnumerable<BrandResponseDto>>();
-        
-        IEnumerable<BrandEntity> brandEntities = await _brandRepository.GetPageAsync(request.Page, request.Size);
+
+        (IEnumerable<BrandEntity> brandEntities, int totalCount) = await _brandRepository.GetPageAsync(request.Page, request.Size);
         IEnumerable<BrandResponseDto> brandResponseDtos = CatalogMapper.Mapper.Map<IEnumerable<BrandResponseDto>>(brandEntities);
         
         baseResponseDto.Data = brandResponseDtos;
-        return baseResponseDto;
+        
+        return (baseResponseDto, totalCount);
     }
 }

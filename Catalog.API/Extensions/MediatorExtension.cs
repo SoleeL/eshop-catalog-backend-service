@@ -15,6 +15,6 @@ public static class MediatorExtension
         
         // Agregar interpretes
         builder.Services.AddTransient<IRequestHandler<CreateBrandCommand, BaseResponseDto<BrandResponseDto>>, CreateBrandCommandHandler>();
-        builder.Services.AddTransient<IRequestHandler<GetAllBrandsQuery, BaseResponseDto<IEnumerable<BrandResponseDto>>>, GetAllBrandsQueryHandler>();
+        builder.Services.AddTransient<IRequestHandler<GetPageBrandsQuery, (BaseResponseDto<IEnumerable<BrandResponseDto>>, int)>, GetPageBrandsQueryHandler>();
     }
 }

@@ -1,11 +1,9 @@
-using Catalog.API.Filters;
-using Catalog.Application.Commands;
+using Catalog.API.Extensions;
 using Catalog.Application.Commands.Brands;
 using Catalog.Application.DTOs;
 using Catalog.Application.DTOs.Bases;
 using Catalog.Application.Extensions;
 using Catalog.Application.Queries.Brands;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Catalog.API.Endpoints.Brand;
@@ -18,7 +16,7 @@ public static class BrandApiV1
 
         api.MapPost("/", CreateBrandAsync);
 
-        api.MapGet("/", GetAllBrands);
+        api.MapGet("/", GetPageBrands);
 
         api.MapGet("/{id:int}", GetBrandById);
 
@@ -50,19 +48,20 @@ public static class BrandApiV1
         return TypedResults.BadRequest(brandResponseDto);
     }
 
-    private static async Task<IResult> GetAllBrands(
+    private static async Task<IResult> GetPageBrands(
         [AsParameters] CatalogServices catalogServices,
         [FromQuery] int page = 1,
         [FromQuery] int size = 10
     )
     {
-        GetAllBrandsQuery getAllBrandsQuery = new GetAllBrandsQuery(page, size);
+        GetPageBrandsQuery getAllBrandsQuery = new GetPageBrandsQuery(page, size);
         
-        BaseResponseDto<IEnumerable<BrandResponseDto>> brandResponseDto = await catalogServices.Mediator.Send(getAllBrandsQuery);
+        (BaseResponseDto<IEnumerable<BrandResponseDto>> brandResponseDto, int totalItemCount) = await catalogServices.Mediator.Send(getAllBrandsQuery);
         
         if (brandResponseDto is { Succcess: true, Data: not null })
         {
             catalogServices.Logger.LogInformation("GetAllBrandsQuery succeeded - Brand obtained");
+            catalogServices.HttpContext.PaginateAsync(totalItemCount, page, size);
             return TypedResults.Ok(brandResponseDto);
         }
 

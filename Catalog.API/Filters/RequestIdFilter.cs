@@ -29,6 +29,7 @@ public class RequestIdFilter: IEndpointFilter
         // "requestId" sea opcional, para gestionar la respuesta de que "X-RequestId" no se paso en la cabecera con un
         // mensaje mas simple y entendible.
         // [FromHeader(Name = "X-RequestId")] string? requestId
+        
         bool requestContainRequestId = context.HttpContext.Request.Headers.ContainsKey("X-RequestId");
         
         if (!requestContainRequestId)

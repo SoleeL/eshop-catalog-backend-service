@@ -20,11 +20,16 @@ public class BrandRepository : IBrandRepository
         await this._catalogDbContext.Brand.AddAsync(brandEntity);
     }
     
-    public async Task<IEnumerable<BrandEntity>> GetPageAsync(int page, int size)
+    public async Task<(IEnumerable<BrandEntity>, int)> GetPageAsync(int page, int size)
     {
         this._catalogDbContext.UseReplicaConnection();
-        IQueryable<BrandEntity> queryable = _catalogDbContext.Brand.AsNoTracking().AsQueryable();
-        return await queryable.PageBy(page, size).ToListAsync();
+        IQueryable<BrandEntity> queryable = this._catalogDbContext.Brand.AsNoTracking().AsQueryable();
+        
+        int totalCount = await queryable.CountAsync();
+        IEnumerable<BrandEntity> brands = await queryable
+            .PageBy(page, size)
+            .ToListAsync();
+        return (brands, totalCount);
     }
 
     public Task<BrandEntity?> GetByIdAsync(Guid id)
