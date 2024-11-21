@@ -1,6 +1,6 @@
-namespace Catalog.Application.DTOs.Bases;
+namespace Catalog.Application.Dtos;
 
-public class BaseError
+public class BaseErrorDto
 {
     public string? PropertyMessage { get; set; }
     public string? ErrorMessage { get; set; }

@@ -1,6 +1,6 @@
+using Catalog.Application.Dtos;
 using Catalog.Application.DTOs;
-using Catalog.Application.DTOs.Bases;
-using Catalog.Infrastructure.Idempotency;
+using Catalog.Application.Idempotency;
 using MediatR;
 using Microsoft.Extensions.Logging;
 

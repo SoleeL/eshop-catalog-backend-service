@@ -28,6 +28,14 @@ public class BrandEntityTypeConfiguration : IEntityTypeConfiguration<BrandEntity
             .HasColumnName("description")
             .HasMaxLength(255);
 
+        builder.Property(b => b.Enabled)
+            .HasColumnName("enabled")
+            .IsRequired();
+        
+        builder.Property(b => b.Approval)
+            .HasColumnName("approval")
+            .IsRequired();
+        
         builder.Property(b => b.CreatedAt)
             .HasColumnName("created_at")
             .HasDefaultValueSql("now()")

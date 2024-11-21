@@ -1,5 +1,5 @@
 using System.Text.Json;
-using Catalog.Application.DTOs.Bases;
+using Catalog.Application.Dtos;
 
 namespace Catalog.API.Extensions;
 

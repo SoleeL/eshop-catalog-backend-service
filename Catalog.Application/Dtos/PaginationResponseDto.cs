@@ -1,4 +1,4 @@
-namespace Catalog.Application.DTOs.Bases;
+namespace Catalog.Application.Dtos;
 
 public class PaginationResponseDto
 {

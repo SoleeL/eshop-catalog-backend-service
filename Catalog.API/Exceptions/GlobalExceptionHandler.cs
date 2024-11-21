@@ -1,4 +1,4 @@
-using Catalog.Application.DTOs.Bases;
+using Catalog.Application.Dtos;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,20 +23,21 @@ internal sealed class GlobalExceptionHandler : IExceptionHandler
     {
         _logger.LogError(exception, "Exception occurred: {Message}", exception.Message);
 
-        BaseResponseDto<ProblemDetails> baseResponseDto = new BaseResponseDto<ProblemDetails>();
-        
-        baseResponseDto.Succcess = false;
-        baseResponseDto.Data = new ProblemDetails
+        BaseResponseDto<ProblemDetails> baseResponseDto = new BaseResponseDto<ProblemDetails>()
         {
-            Status = StatusCodes.Status500InternalServerError,
-            Title = exception.Message
+            Succcess = false,
+            Data = new ProblemDetails
+            {
+                Status = StatusCodes.Status500InternalServerError,
+                Title = exception.Message
+            },
+            Message = "Server error"
         };
-        baseResponseDto.Message = "Server error";
-        
+
         httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
 
         await httpContext.Response.WriteAsJsonAsync(baseResponseDto, cancellationToken);
-        
+
         return true;
     }
 }

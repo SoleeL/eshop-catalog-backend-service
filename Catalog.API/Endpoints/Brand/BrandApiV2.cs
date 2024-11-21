@@ -1,8 +1,8 @@
 using Catalog.API.Filters;
 using Catalog.Application.Commands;
 using Catalog.Application.Commands.Brands;
+using Catalog.Application.Dtos;
 using Catalog.Application.DTOs;
-using Catalog.Application.DTOs.Bases;
 using Catalog.Application.Extensions;
 using Microsoft.AspNetCore.Mvc;
 

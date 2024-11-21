@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Catalog.Infrastructure.Idempotency;
+namespace Catalog.Application.Idempotency;
 
 public class ClientRequest
 {

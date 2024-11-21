@@ -1,4 +1,4 @@
-using Catalog.Application.DTOs.Bases;
+using Catalog.Application.Dtos;
 
 namespace Catalog.API.Filters;
 

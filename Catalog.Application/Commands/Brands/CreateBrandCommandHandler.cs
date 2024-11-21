@@ -1,5 +1,5 @@
+using Catalog.Application.Dtos;
 using Catalog.Application.DTOs;
-using Catalog.Application.DTOs.Bases;
 using Catalog.Application.Exceptions;
 using Catalog.Application.Mappers;
 using Catalog.Domain;

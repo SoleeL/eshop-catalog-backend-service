@@ -24,6 +24,7 @@ public class CatalogMappingProfile : Profile
         
         CreateMap<BrandEntity, BrandResponseDto>()
             .IncludeBase<BaseEntity, BrandResponseDto>();
+            // .ForMember(); // TODO: AQUI ME QUEDE, HAY QUE PASAR EL Approval y limitar en la base de datos, quizas con una tabla de estados de aprovacion
         
         // CreateMap<ProductEntity, ProductResponseDto>()
         //     .IncludeBase<BaseEntity, ProductResponseDto>();

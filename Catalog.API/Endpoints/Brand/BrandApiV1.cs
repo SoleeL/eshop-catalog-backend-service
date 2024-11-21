@@ -1,9 +1,12 @@
+using System.ComponentModel.DataAnnotations;
 using Catalog.API.Extensions;
 using Catalog.Application.Commands.Brands;
+using Catalog.Application.Dtos;
 using Catalog.Application.DTOs;
-using Catalog.Application.DTOs.Bases;
 using Catalog.Application.Extensions;
 using Catalog.Application.Queries.Brands;
+using Catalog.Domain.Enums;
+using Catalog.Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Catalog.API.Endpoints.Brand;
@@ -50,18 +53,29 @@ public static class BrandApiV1
 
     private static async Task<IResult> GetPageBrands(
         [AsParameters] CatalogServices catalogServices,
-        [FromQuery] int page = 1,
-        [FromQuery] int size = 10
+        [FromQuery] bool? enabled,
+        [FromQuery] string? approval,
+        [FromQuery] string? search,
+        [FromQuery] string? sort,
+        [FromQuery] int? page,
+        [FromQuery] int? size
     )
     {
-        GetPageBrandsQuery getAllBrandsQuery = new GetPageBrandsQuery(page, size);
-        
-        (BaseResponseDto<IEnumerable<BrandResponseDto>> brandResponseDto, int totalItemCount) = await catalogServices.Mediator.Send(getAllBrandsQuery);
-        
+        GetPageBrandsQuery getPageBrandsQuery = new GetPageBrandsQuery(
+            enabled: enabled,
+            approval: approval,
+            search: search,
+            sort: sort,
+            page: page,
+            size: size
+        );
+
+        BaseResponseDto<IEnumerable<BrandResponseDto>> brandResponseDto = await catalogServices.Mediator.Send(getPageBrandsQuery);
+
         if (brandResponseDto is { Succcess: true, Data: not null })
         {
             catalogServices.Logger.LogInformation("GetAllBrandsQuery succeeded - Brand obtained");
-            catalogServices.HttpContext.PaginateAsync(totalItemCount, page, size);
+            catalogServices.HttpContext.PaginateAsync(brandResponseDto.TotalItemCount, getPageBrandsQuery.Page, getPageBrandsQuery.Size);
             return TypedResults.Ok(brandResponseDto);
         }
 

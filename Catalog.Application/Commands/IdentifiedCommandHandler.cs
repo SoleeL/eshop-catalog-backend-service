@@ -2,7 +2,7 @@ using Catalog.Application.Commands.Brands;
 using Catalog.Application.Commands.Categories;
 using Catalog.Application.Commands.Types;
 using Catalog.Application.Extensions;
-using Catalog.Infrastructure.Idempotency;
+using Catalog.Application.Idempotency;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -47,58 +47,60 @@ public abstract class IdentifiedCommandHandler<T, TR> : IRequestHandler<Identifi
     /// <returns>Return value of inner command or default value if request same ID was found</returns>
     public async Task<TR> Handle(IdentifiedCommand<T, TR> message, CancellationToken cancellationToken)
     {
-        var alreadyExists = await _requestManager.ExistAsync(message.Id);
-        if (alreadyExists) return CreateResultForDuplicateRequest();
-
-        // TODO: Uso de OrderingDomainException
-        await _requestManager.CreateRequestForCommandAsync<T>(message.Id);
+        // var alreadyExists = await _requestManager.ExistAsync(message.Id);
+        // if (alreadyExists) return CreateResultForDuplicateRequest();
+        //
+        // // TODO: Uso de OrderingDomainException
+        // await _requestManager.CreateRequestForCommandAsync<T>(message.Id);
+        //
+        // try
+        // {
+        //     var command = message.Command;
+        //     var commandName = command.GetGenericTypeName();
+        //     string nameProperty;
+        //
+        //     switch (command)
+        //     {
+        //         case CreateBrandCommand addBrandCommand:
+        //             nameProperty = nameof(addBrandCommand.Name);
+        //             break;
+        //
+        //         case AddCategoryCommand addCategoryCommand:
+        //             nameProperty = nameof(addCategoryCommand.Name);
+        //             break;
+        //
+        //         case AddTypeCommand addTypeCommand:
+        //             nameProperty = nameof(addTypeCommand.Name);
+        //             break;
+        //
+        //         default:
+        //             nameProperty = "n/a";
+        //             break;
+        //     }
+        //
+        //     _logger.LogInformation(
+        //         "Sending command: {CommandName} - {nameProperty} ({@Command})",
+        //         commandName,
+        //         nameProperty,
+        //         command);
+        //
+        //     // Send the embedded business command to mediator so it runs its related CommandHandler 
+        //     var result = await _mediator.Send(command, cancellationToken);
+        //
+        //     _logger.LogInformation(
+        //         "Command result: {@Result} - {CommandName} - {nameProperty} ({@Command})",
+        //         result,
+        //         commandName,
+        //         nameProperty,
+        //         command);
+        //
+        //     return result;
+        // }
+        // catch
+        // {
+        //     return default;
+        // }
         
-        try
-        {
-            var command = message.Command;
-            var commandName = command.GetGenericTypeName();
-            string nameProperty;
-
-            switch (command)
-            {
-                case CreateBrandCommand addBrandCommand:
-                    nameProperty = nameof(addBrandCommand.Name);
-                    break;
-
-                case AddCategoryCommand addCategoryCommand:
-                    nameProperty = nameof(addCategoryCommand.Name);
-                    break;
-
-                case AddTypeCommand addTypeCommand:
-                    nameProperty = nameof(addTypeCommand.Name);
-                    break;
-
-                default:
-                    nameProperty = "n/a";
-                    break;
-            }
-
-            _logger.LogInformation(
-                "Sending command: {CommandName} - {nameProperty} ({@Command})",
-                commandName,
-                nameProperty,
-                command);
-
-            // Send the embedded business command to mediator so it runs its related CommandHandler 
-            var result = await _mediator.Send(command, cancellationToken);
-
-            _logger.LogInformation(
-                "Command result: {@Result} - {CommandName} - {nameProperty} ({@Command})",
-                result,
-                commandName,
-                nameProperty,
-                command);
-
-            return result;
-        }
-        catch
-        {
-            return default;
-        }
+        return default(TR);
     }
 }
