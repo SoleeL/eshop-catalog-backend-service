@@ -24,6 +24,7 @@ public static class BrandApiV1
     }
 
     private static async Task<IResult> CreateBrandAsync(
+        CancellationToken cancellationToken,
         [AsParameters] CatalogServices catalogServices,
         [FromBody] BrandCreateDto brandCreateDto // TODO: Agregar middlerware para control de excepcion por no envio de json en el la request post
     )
@@ -34,7 +35,18 @@ public static class BrandApiV1
         CreateBrandCommand createBrandCommand = new CreateBrandCommand(brandCreateDto.Name, brandCreateDto.Description);
 
         // README: Implementando creacion de marca sin idempotencia a traves del CreateBrandCommand
-        BaseResponseDto<BrandResponseDto> brandResponseDto = await catalogServices.Mediator.Send(createBrandCommand);
+        BaseResponseDto<BrandResponseDto> brandResponseDto = await catalogServices.Mediator.Send(createBrandCommand, cancellationToken);
+        // IMPORTANT: Sobre metodo .Send(
+        // La definicion del metodo .Send( es:
+        // public abstract Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default(CancellationToken))
+        // 1.- request es nuestro comando o query
+        // 2.- cancellationToken es un parámetro opcional
+        //      default(CancellationToken):
+        //          * Cuando no se pasa un valor explícito, el compilador genera un CancellationToken por defecto.
+        //          * Un CancellationToken por defecto es un token no cancelable (es decir, IsCancellationRequested siempre será false).
+        //          * Esto significa que el método funcionará sin interrupciones porque nunca se solicitará la cancelación.
+        //      Si queremos poder evitar que un proceso se finalice si la request fue cancelada o descartada por el
+        //          cliente, se debe ser explícito al pasar el CancellationToken desde el endpoint a nuestro handler.
 
         if (brandResponseDto is { Succcess: true, Data: not null })
         {
