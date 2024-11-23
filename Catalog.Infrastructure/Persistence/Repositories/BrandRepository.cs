@@ -39,7 +39,7 @@ public class BrandRepository : IBrandRepository
 
         if (enabled != null) queryable = queryable.Where(b => b.Enabled == enabled);
 
-        if (approval != null) queryable = queryable.Where(b => b.Approval == (int) approval);
+        if (approval != null) queryable = queryable.Where(b => b.Approval == (int)approval);
 
         if (!string.IsNullOrEmpty(search))
         {
@@ -55,9 +55,9 @@ public class BrandRepository : IBrandRepository
         IEnumerable<BrandEntity> brands = await queryable
             .PageBy(page, size)
             .ToListAsync();
-        
+
         _logger.LogInformation("Query expression: {QueryExpression}", queryable.ToQueryString());
-        
+
         return (brands, totalCount);
     }
 
@@ -74,5 +74,11 @@ public class BrandRepository : IBrandRepository
     public Task DeleteAsync(Guid id)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<bool> BrandNameExistsAsync(string name)
+    {
+        _catalogDbContext.UseReplicaConnection();
+        return await _catalogDbContext.Brand.AnyAsync(b => b.Name.ToLower() == name);
     }
 }

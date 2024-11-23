@@ -24,7 +24,7 @@ public static class MediatorExtension
         });
         
         // Agregar validadores de los comandos y queries
-        builder.Services.AddSingleton<IValidator<CreateBrandCommand>, CreateBrandCommandValidator>();
+        builder.Services.AddScoped<IValidator<CreateBrandCommand>, CreateBrandCommandValidator>();
         builder.Services.AddSingleton<IValidator<GetPageBrandsQuery>, GetPageBrandsQueryValidator>();
         
         // Agregar interpretes de los comandos y queries (CQRS)

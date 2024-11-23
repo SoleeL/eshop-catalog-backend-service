@@ -33,8 +33,16 @@ public class ValidatorBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest
 
         _logger.LogInformation("Validating {CommandQueryType}", typeName);
 
-        List<ValidationFailure> failures = _validators
-            .Select(v => v.Validate(request))
+        // IMPORTANT: FORMA SINCRONA
+        // List<ValidationFailure> failures = _validators
+        //     .Select(v => v.Validate(request))
+        //     .SelectMany(result => result.Errors)
+        //     .Where(error => error != null)
+        //     .ToList();
+        
+        List<ValidationFailure> failures = (await Task.WhenAll(
+                _validators.Select(v => v.ValidateAsync(request, cancellationToken))
+            ))
             .SelectMany(result => result.Errors)
             .Where(error => error != null)
             .ToList();
