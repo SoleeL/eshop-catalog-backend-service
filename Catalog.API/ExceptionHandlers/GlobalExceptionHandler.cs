@@ -2,7 +2,7 @@ using Catalog.Application.Dtos;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Catalog.API.Exceptions;
+namespace Catalog.API.ExceptionHandlers;
 
 internal sealed class GlobalExceptionHandler : IExceptionHandler
 {

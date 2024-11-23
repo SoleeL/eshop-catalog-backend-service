@@ -1,4 +1,4 @@
-using Catalog.API.Exceptions;
+using Catalog.API.ExceptionHandlers;
 
 namespace Catalog.API.Extensions;
 
@@ -10,5 +10,4 @@ public static class ProblemDetailsExtension
         builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
         builder.Services.AddProblemDetails();
     }
-    
 }

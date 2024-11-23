@@ -1,10 +1,22 @@
 using Catalog.Application.Dtos;
 using FluentValidation;
-using FluentValidation.Results;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
 
-namespace Catalog.API.Exceptions;
+namespace Catalog.API.ExceptionHandlers;
+
+public class ValidationError
+{
+    public string PropertyName { get; set; }
+    public string ErrorMessage { get; set; }
+    public object AttemptedValue { get; set; }
+
+    public ValidationError(string propertyName, string errorMessage, object attemptedValue)
+    {
+        PropertyName = propertyName;
+        ErrorMessage = errorMessage;
+        AttemptedValue = attemptedValue;
+    }
+}
 
 internal sealed class ValidationExceptionHandler : IExceptionHandler
 {
@@ -21,16 +33,19 @@ internal sealed class ValidationExceptionHandler : IExceptionHandler
         CancellationToken cancellationToken)
     {
         if (exception is not ValidationException validationException) return false;
-        
+
         _logger.LogError(exception, "ValidationException occurred: {Message}", exception.Message);
+
+        List<ValidationError> validationErrors = validationException.Errors.Select(error =>
+            new ValidationError(error.PropertyName, error.ErrorMessage, error.AttemptedValue)).ToList();
         
-        BaseResponseDto<List<ValidationFailure>> baseResponseDto = new BaseResponseDto<List<ValidationFailure>>
+        BaseResponseDto<List<ValidationError>> baseResponseDto = new BaseResponseDto<List<ValidationError>>
         {
             Succcess = false,
-            Data = validationException.Errors as List<ValidationFailure>,
+            Data = validationErrors,
             Message = "Validation error"
         };
-        
+
         httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
         await httpContext.Response.WriteAsJsonAsync(baseResponseDto, cancellationToken);
 

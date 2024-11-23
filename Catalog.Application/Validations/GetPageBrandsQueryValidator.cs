@@ -1,5 +1,6 @@
 using Catalog.Application.Extensions;
 using Catalog.Application.Queries.Brands;
+using Catalog.Application.Validations.Utils;
 using Catalog.Domain.Entities;
 using Catalog.Domain.Enums;
 using FluentValidation;
@@ -9,10 +10,7 @@ namespace Catalog.Application.Validations;
 
 public class GetPageBrandsQueryValidator : AbstractValidator<GetPageBrandsQuery>
 {
-    readonly HashSet<string> _validFields = typeof(BrandEntity)
-        .GetProperties()
-        .SelectMany(p => new[] { p.Name, $"-{p.Name}" })
-        .ToHashSet();
+    readonly HashSet<string> _validFields = ValidFieldsUtil.GetValidFields<BrandEntity>();
     
     public GetPageBrandsQueryValidator(ILogger<GetPageBrandsQueryValidator> logger)
     {
