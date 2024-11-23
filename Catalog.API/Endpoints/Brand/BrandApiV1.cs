@@ -1,12 +1,9 @@
-using System.ComponentModel.DataAnnotations;
 using Catalog.API.Extensions;
 using Catalog.Application.Commands.Brands;
 using Catalog.Application.Dtos;
-using Catalog.Application.DTOs;
+using Catalog.Application.Dtos.Entities;
 using Catalog.Application.Extensions;
 using Catalog.Application.Queries.Brands;
-using Catalog.Domain.Enums;
-using Catalog.Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Catalog.API.Endpoints.Brand;
@@ -28,11 +25,10 @@ public static class BrandApiV1
 
     private static async Task<IResult> CreateBrandAsync(
         [AsParameters] CatalogServices catalogServices,
-        [FromBody] BrandCreateDto brandCreateDto
+        [FromBody] BrandCreateDto brandCreateDto // TODO: Agregar middlerware para control de excepcion por no envio de json en el la request post
     )
     {
-        catalogServices.Logger.LogInformation(
-            "Sending command: {CommandName} - {nameProperty}: {CommandId}",
+        catalogServices.Logger.LogInformation("Sending command: {CommandName} - {nameProperty}: {CommandId}",
             brandCreateDto.GetGenericTypeName(), nameof(brandCreateDto.Name), brandCreateDto.Name);
 
         CreateBrandCommand createBrandCommand = new CreateBrandCommand(brandCreateDto.Name, brandCreateDto.Description);

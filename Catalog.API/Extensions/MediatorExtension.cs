@@ -2,7 +2,7 @@ using System.Reflection;
 using Catalog.Application.Behaviors;
 using Catalog.Application.Commands.Brands;
 using Catalog.Application.Dtos;
-using Catalog.Application.DTOs;
+using Catalog.Application.Dtos.Entities;
 using Catalog.Application.Queries.Brands;
 using Catalog.Application.Validations;
 using FluentValidation;

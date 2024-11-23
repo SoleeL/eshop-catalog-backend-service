@@ -1,4 +1,4 @@
-using Catalog.Application.DTOs;
+using Catalog.Application.Dtos.Entities;
 using MediatR;
 
 namespace Catalog.Application.Queries.Products;

@@ -1,5 +1,5 @@
 using AutoMapper;
-using Catalog.Application.DTOs;
+using Catalog.Application.Dtos.Entities;
 using Catalog.Domain.Entities;
 
 namespace Catalog.Application.Mappers;

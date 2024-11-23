@@ -1,4 +1,4 @@
-using Catalog.Application.DTOs;
+using Catalog.Application.Dtos.Entities;
 using Catalog.Application.Mappers;
 using Catalog.Application.Queries.Brands;
 using Catalog.Domain.Entities;

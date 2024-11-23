@@ -1,6 +1,6 @@
 using Catalog.Domain.Enums;
 
-namespace Catalog.Application.DTOs;
+namespace Catalog.Application.Dtos.Entities;
 
 public class BrandResponseDto
 {

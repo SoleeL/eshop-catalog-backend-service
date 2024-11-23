@@ -1,5 +1,5 @@
 using Catalog.Application.Dtos;
-using Catalog.Application.DTOs;
+using Catalog.Application.Dtos.Entities;
 using Catalog.Application.Exceptions;
 using Catalog.Application.Mappers;
 using Catalog.Domain;
@@ -11,8 +11,8 @@ namespace Catalog.Application.Commands.Brands;
 
 public class CreateBrandCommand : IRequest<BaseResponseDto<BrandResponseDto>>
 {
-    public string Name { get; set; }
-    public string Description { get; set; }
+    public string Name { get; }
+    public string Description { get; }
     
     public CreateBrandCommand(string name, string description)
     {

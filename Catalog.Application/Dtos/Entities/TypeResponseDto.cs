@@ -1,4 +1,4 @@
-namespace Catalog.Application.DTOs;
+namespace Catalog.Application.Dtos.Entities;
 
 public class TypeResponseDto
 {
