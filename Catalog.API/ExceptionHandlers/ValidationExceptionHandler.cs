@@ -4,20 +4,6 @@ using Microsoft.AspNetCore.Diagnostics;
 
 namespace Catalog.API.ExceptionHandlers;
 
-public class ValidationError
-{
-    public string PropertyName { get; set; }
-    public string ErrorMessage { get; set; }
-    public object AttemptedValue { get; set; }
-
-    public ValidationError(string propertyName, string errorMessage, object attemptedValue)
-    {
-        PropertyName = propertyName;
-        ErrorMessage = errorMessage;
-        AttemptedValue = attemptedValue;
-    }
-}
-
 internal sealed class ValidationExceptionHandler : IExceptionHandler
 {
     private readonly ILogger<ValidationExceptionHandler> _logger;
@@ -30,16 +16,24 @@ internal sealed class ValidationExceptionHandler : IExceptionHandler
     public async ValueTask<bool> TryHandleAsync(
         HttpContext httpContext,
         Exception exception,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         if (exception is not ValidationException validationException) return false;
 
         _logger.LogError(exception, "ValidationException occurred: {Message}", exception.Message);
 
-        List<ValidationError> validationErrors = validationException.Errors.Select(error =>
-            new ValidationError(error.PropertyName, error.ErrorMessage, error.AttemptedValue)).ToList();
-        
-        BaseResponseDto<List<ValidationError>> baseResponseDto = new BaseResponseDto<List<ValidationError>>
+        List<ValidationErrorDto> validationErrors = validationException.Errors
+            .Select(error =>
+                new ValidationErrorDto
+                {
+                    PropertyName = error.PropertyName,
+                    ErrorMessage = error.ErrorMessage,
+                    AttemptedValue = error.AttemptedValue,
+                })
+            .ToList();
+
+        BaseResponseDto<List<ValidationErrorDto>> baseResponseDto = new BaseResponseDto<List<ValidationErrorDto>>
         {
             Succcess = false,
             Data = validationErrors,

@@ -22,4 +22,7 @@ public interface IBrandRepository
     Task UpdateAsync(BrandEntity brand);
 
     Task DeleteAsync(Guid id);
+    
+    // Internal util
+    Task<bool> BrandNameExistsAsync(string name);
 }

@@ -1,13 +1,12 @@
 using Catalog.Domain.Entities;
 using Catalog.Infrastructure.Persistence.Configurations;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace Catalog.Infrastructure.Persistence;
 
 public class CatalogDbContext : DbContext
 {
-    private readonly string _primaryConnectionString;
+    private readonly string _primaryConnectionString; // TODO: AQUI ME QUEDE -> ELIMINAR ESTO, YA QUE GENERA CONFLICTO CON UNITOFWORK Y CREAR 2 DBCONTEXT CON LA MISMA BASE
     private readonly string _replicaConnectionString;
     private string _currentConnectionString;
 

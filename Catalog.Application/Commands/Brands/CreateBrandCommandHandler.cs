@@ -6,6 +6,7 @@ using Catalog.Domain;
 using Catalog.Domain.Entities;
 using Catalog.Domain.Repositories;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Catalog.Application.Commands.Brands;
 
@@ -25,11 +26,13 @@ public class CreateBrandCommandHandler : IRequestHandler<CreateBrandCommand, Bas
 {
     private readonly IBrandRepository _brandRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILogger<CreateBrandCommandHandler> _logger;
 
-    public CreateBrandCommandHandler(IBrandRepository brandRepository, IUnitOfWork unitOfWork)
+    public CreateBrandCommandHandler(IBrandRepository brandRepository, IUnitOfWork unitOfWork, ILogger<CreateBrandCommandHandler> logger)
     {
         _brandRepository = brandRepository;
         _unitOfWork = unitOfWork;
+        _logger = logger;
     }
 
     public async Task<BaseResponseDto<BrandResponseDto>> Handle(CreateBrandCommand request, CancellationToken cancellationToken)
@@ -39,21 +42,21 @@ public class CreateBrandCommandHandler : IRequestHandler<CreateBrandCommand, Bas
         await _unitOfWork.BeginTransactionAsync(cancellationToken);
         // BUG: Si el host de la db esta caida o no alcanzable, esto devuelve informacion innecesaria al usuario
 
+        // Crear la entidad BrandEntity
+        BrandEntity brandEntity = new BrandEntity
+        {
+            Name = request.Name,
+            Description = request.Description
+        };
+        
+        // Agregar la nueva marca a la base de datos
+        await _brandRepository.AddAsync(brandEntity);
+
+        // Puedes realizar otras modificaciones aquí si es necesario (segundo posible cambio)
+        // await _inventoryRepository.UpdateStockAsync(request.ProductId, request.Quantity);
+        
         try
         {
-            // Crear la entidad BrandEntity
-            BrandEntity brandEntity = new BrandEntity
-            {
-                Name = request.Name,
-                Description = request.Description
-            };
-
-            // Agregar la nueva marca a la base de datos
-            await _brandRepository.AddAsync(brandEntity);
-
-            // Puedes realizar otras modificaciones aquí si es necesario (segundo posible cambio)
-            // await _inventoryRepository.UpdateStockAsync(request.ProductId, request.Quantity);
-
             // Confirmar la transacción
             await _unitOfWork.CommitAsync(cancellationToken);
 
@@ -63,21 +66,15 @@ public class CreateBrandCommandHandler : IRequestHandler<CreateBrandCommand, Bas
             BrandResponseDto brandResponseDto = CatalogMapper.Mapper.Map<BrandResponseDto>(brandEntity);
 
             baseResponseDto.Data = brandResponseDto;
-            return baseResponseDto;
-        }
-        catch (InvalidEntityException exception)
-        {
-            baseResponseDto.Succcess = false;
-            baseResponseDto.Message = exception.Message;
-            return baseResponseDto;
         }
         catch (Exception exception)
         {
             // Si hay un error, revertir la transacción
             await _unitOfWork.RollbackAsync(cancellationToken);
             baseResponseDto.Succcess = false;
-            baseResponseDto.Message = exception.Message;
-            return baseResponseDto;
+            baseResponseDto.Message = exception.InnerException != null ? exception.InnerException.Message : exception.Message;
         }
+        
+        return baseResponseDto;
     }
 }
