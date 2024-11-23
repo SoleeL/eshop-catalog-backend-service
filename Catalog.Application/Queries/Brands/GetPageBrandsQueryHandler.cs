@@ -10,27 +10,27 @@ namespace Catalog.Application.Queries.Brands;
 
 public class GetPageBrandsQuery : BaseQuery<BaseResponseDto<IEnumerable<BrandResponseDto>>>
 {
-    public bool? Enabled { get; init; } // Filtration
-    public string? Approval { get; init; } // Filtration
+    public bool? Enabled { get; } // Filtration
+    public string? Approval { get; } // Filtration // Necesita valicacion
 
-    public string? Search { get; init; } // Search
+    public string? Search { get; } // Search
 
-    public List<string> Sort { get; init; } // Sorting -> ASC = "id", DESC = "-id"
+    public List<string> Sort { get; } // Sorting -> ASC = "id", DESC = "-id"
 
-    public int Page { get; init; } = 1; // Pagination
-    public int Size { get; init; } = 10; // Pagination
+    public int Page { get; } = 1; // Pagination
+    public int Size { get; } = 10; // Pagination
 
     public GetPageBrandsQuery(
-        bool? enabled = null,
-        string? approval = null,
-        string? search = null,
-        string? sort = null,
-        int? page = null,
-        int? size = null
+        bool? enabled,
+        string? approval,
+        string? search,
+        string? sort,
+        int? page,
+        int? size
     )
     {
         Enabled = enabled;
-        Approval = approval;
+        Approval = Capitalize(approval);
         Search = search;
         Sort = ParseToList(sort);
         Page = page ?? Page;

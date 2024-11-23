@@ -1,27 +1,28 @@
-using Catalog.Application.Dtos;
-using Catalog.Domain;
+using Catalog.Application.Extensions;
 using Catalog.Domain.Entities;
 using Catalog.Domain.Enums;
 using Catalog.Domain.Repositories;
-using Catalog.Domain.Shared;
 using Catalog.Infrastructure.Persistence.Utilities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Catalog.Infrastructure.Persistence.Repositories;
 
 public class BrandRepository : IBrandRepository
 {
     private readonly CatalogDbContext _catalogDbContext;
+    private readonly ILogger<BrandRepository> _logger;
 
-    public BrandRepository(CatalogDbContext catalogDbContext)
+    public BrandRepository(CatalogDbContext catalogDbContext, ILogger<BrandRepository> logger)
     {
-        this._catalogDbContext = catalogDbContext;
+        _catalogDbContext = catalogDbContext;
+        _logger = logger;
     }
 
     public async Task AddAsync(BrandEntity brandEntity)
     {
-        this._catalogDbContext.UsePrimaryConnection();
-        await this._catalogDbContext.Brand.AddAsync(brandEntity);
+        _catalogDbContext.UsePrimaryConnection();
+        await _catalogDbContext.Brand.AddAsync(brandEntity);
     }
 
     public async Task<(IEnumerable<BrandEntity>, int)> GetPageAsync(
@@ -33,8 +34,8 @@ public class BrandRepository : IBrandRepository
         int size
     )
     {
-        this._catalogDbContext.UseReplicaConnection();
-        IQueryable<BrandEntity> queryable = this._catalogDbContext.Brand.AsNoTracking().AsQueryable();
+        _catalogDbContext.UseReplicaConnection();
+        IQueryable<BrandEntity> queryable = _catalogDbContext.Brand.AsNoTracking().AsQueryable();
 
         if (enabled != null) queryable = queryable.Where(b => b.Enabled == enabled);
 
@@ -48,27 +49,15 @@ public class BrandRepository : IBrandRepository
             );
         }
 
-        if (sort.Any())
-        {
-            foreach (var sortField in sort)
-            {
-                if (sortField.StartsWith("-"))
-                {
-                    var field = sortField.Substring(1); // Remover el prefijo "-"
-                    queryable = queryable.OrderByDescending(b => EF.Property<object>(b, field));
-                }
-                else
-                {
-                    queryable = queryable.OrderBy(u => EF.Property<object>(u, sortField));
-                }
-            }
-        }
+        if (sort.Any()) queryable = queryable.OrderByColumns(sort);
 
         int totalCount = await queryable.CountAsync();
         IEnumerable<BrandEntity> brands = await queryable
             .PageBy(page, size)
             .ToListAsync();
-
+        
+        _logger.LogInformation("Query expression: {QueryExpression}", queryable.ToQueryString());
+        
         return (brands, totalCount);
     }
 

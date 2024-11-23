@@ -15,7 +15,7 @@ public static class BrandApiV1
 {
     public static IEndpointRouteBuilder MapBrandApiV1(this IEndpointRouteBuilder app)
     {
-        var api = app.MapGroup("/api/brand").HasApiVersion(1.0);
+        RouteGroupBuilder api = app.MapGroup("/api/brand").HasApiVersion(1.0);
 
         api.MapPost("/", CreateBrandAsync);
 

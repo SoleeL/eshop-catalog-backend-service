@@ -17,11 +17,11 @@ public static class HttpContextExtensions
         int totalPageCount = (int)Math.Ceiling(totalItemCount / (double)pageSize);
         
         // Construir URL de la página anterior y siguiente
-        var baseUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}{httpContext.Request.Path}";
+        string baseUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}{httpContext.Request.Path}";
         Boolean hasPrevious = currentPage > 1;
         Boolean hasNext = currentPage < totalPageCount;
-        var previousPageUrl = hasPrevious ? $"{baseUrl}?page={currentPage - 1}&size={pageSize}" : null;
-        var nextPageUrl = hasNext ? $"{baseUrl}?page={currentPage + 1}&size={pageSize}" : null;
+        string? previousPageUrl = hasPrevious ? $"{baseUrl}?page={currentPage - 1}&size={pageSize}" : null;
+        string? nextPageUrl = hasNext ? $"{baseUrl}?page={currentPage + 1}&size={pageSize}" : null;
         
         PaginationResponseDto paginationResponseDto = new PaginationResponseDto()
         {
