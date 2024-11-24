@@ -12,21 +12,21 @@ public class CreateBrandCommandValidator : AbstractValidator<CreateBrandCommand>
         RuleFor(createBrand => createBrand.Name)
             .Cascade(CascadeMode.Stop) // Detener al primer error y evitar multiples mensajes de validacion
             .NotNull()
-            .WithMessage("Brand name cannot be null.")
+            .WithMessage("Brand name cannot be null")
             .NotEmpty()
-            .WithMessage("Brand name cannot be empty.")
+            .WithMessage("Brand name cannot be empty")
             .MaximumLength(100)
-            .WithMessage("Brand name must not exceed 100 characters.")
+            .WithMessage("Brand name must not exceed 100 characters")
             .MustAsync(async (name, cancellation) => !await brandRepository.BrandNameExistsAsync(name.ToLower()))
-            .WithMessage("Brand name must be unique.");
+            .WithMessage("Brand name already used");
         
         RuleFor(createBrand => createBrand.Description)
             .Cascade(CascadeMode.Stop) // Detener al primer error y evitar multiples mensajes de validacion 
             .NotNull()
-            .WithMessage("Brand description cannot be null.")
+            .WithMessage("Brand description cannot be null")
             .NotEmpty()
-            .WithMessage("Brand description cannot be empty.")
+            .WithMessage("Brand description cannot be empty")
             .MaximumLength(255)
-            .WithMessage("Brand description must not exceed 255 characters.");
+            .WithMessage("Brand description must not exceed 255 characters");
     }
 }

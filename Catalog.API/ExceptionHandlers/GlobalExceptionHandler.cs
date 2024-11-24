@@ -21,6 +21,7 @@ internal sealed class GlobalExceptionHandler : IExceptionHandler
         Exception exception,
         CancellationToken cancellationToken)
     {
+        _logger.LogError(exception, "Exception type: {Exception}", exception.GetType().Name);
         _logger.LogError(exception, "Exception occurred: {Message}", exception.Message);
 
         BaseResponseDto<ProblemDetails> baseResponseDto = new BaseResponseDto<ProblemDetails>()
@@ -28,13 +29,14 @@ internal sealed class GlobalExceptionHandler : IExceptionHandler
             Succcess = false,
             Data = new ProblemDetails
             {
-                Status = StatusCodes.Status500InternalServerError,
-                Title = exception.Message
+                Type = exception.InnerException?.GetType().Name,
+                Title = exception.Message,
+                Detail = exception.InnerException?.Message
             },
             Message = "Server error"
         };
 
-        httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+        httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
         await httpContext.Response.WriteAsJsonAsync(baseResponseDto, cancellationToken);
 

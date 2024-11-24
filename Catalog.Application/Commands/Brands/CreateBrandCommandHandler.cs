@@ -37,7 +37,6 @@ public class CreateBrandCommandHandler : IRequestHandler<CreateBrandCommand, Bas
 
     public async Task<BaseResponseDto<BrandResponseDto>> Handle(CreateBrandCommand request, CancellationToken cancellationToken)
     {
-        BaseResponseDto<BrandResponseDto> baseResponseDto = new BaseResponseDto<BrandResponseDto>();
         
         await _unitOfWork.BeginTransactionAsync(cancellationToken);
         // BUG: Si el host de la db esta caida o no alcanzable, esto devuelve informacion innecesaria al usuario
@@ -59,21 +58,20 @@ public class CreateBrandCommandHandler : IRequestHandler<CreateBrandCommand, Bas
         {
             // Confirmar la transacción
             await _unitOfWork.CommitAsync(cancellationToken);
-
-            if (brandEntity.Id == Guid.Empty) throw new InvalidEntityException("Brand could not be created. Please try again.");
-
-            // Mapear la entidad a un DTO de respuesta
-            BrandResponseDto brandResponseDto = CatalogMapper.Mapper.Map<BrandResponseDto>(brandEntity);
-
-            baseResponseDto.Data = brandResponseDto;
+            
+            if (brandEntity.Id == Guid.Empty) throw new EntityException("Brand could not be created. Please try again.");
         }
         catch (Exception exception)
         {
             // Si hay un error, revertir la transacción
             await _unitOfWork.RollbackAsync(cancellationToken);
-            baseResponseDto.Succcess = false;
-            baseResponseDto.Message = exception.InnerException != null ? exception.InnerException.Message : exception.Message;
+            throw exception;
         }
+        
+        BaseResponseDto<BrandResponseDto> baseResponseDto = new BaseResponseDto<BrandResponseDto>()
+        {
+            Data = CatalogMapper.Mapper.Map<BrandResponseDto>(brandEntity)
+        };
         
         return baseResponseDto;
     }

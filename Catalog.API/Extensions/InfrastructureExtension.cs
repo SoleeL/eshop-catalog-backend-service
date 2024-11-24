@@ -1,6 +1,7 @@
 using Catalog.Domain;
 using Catalog.Domain.Repositories;
 using Catalog.Infrastructure.Persistence;
+using Catalog.Infrastructure.Persistence.DbContexts;
 using Catalog.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,17 +28,11 @@ public static class InfrastructureExtension
         String? userRo = Environment.GetEnvironmentVariable("ESHOP_CATALOG_DATABASE_USER_READ_ONLY");
         String? passwordRo = Environment.GetEnvironmentVariable("ESHOP_CATALOG_DATABASE_USER_READ_ONLY_PASSWORD");
         
-        // builder.Services.AddDbContext<CatalogDbContext>(optionsBuilder => optionsBuilder.UseNpgsql(connectionString));
-        
         String primaryConnectionString = $"Host={host};Port={port};Database={database};Username={userRw};Password={passwordRw}";
-        String replicaConnectionString = $"Host={host};Port={portReplica};Database={database};Username={userRo};Password={passwordRo}";
+        builder.Services.AddDbContext<CatalogPrimaryDbContext>(optionsBuilder => optionsBuilder.UseNpgsql(primaryConnectionString));
         
-        builder.Services.AddScoped<CatalogDbContext>(provider =>
-        {
-            IConfiguration configuration = provider.GetRequiredService<IConfiguration>();
-            CatalogDbContext context = new CatalogDbContext(new DbContextOptions<CatalogDbContext>(), primaryConnectionString, replicaConnectionString);
-            return context;
-        });
+        String replicaConnectionString = $"Host={host};Port={portReplica};Database={database};Username={userRo};Password={passwordRo}";
+        builder.Services.AddDbContext<CatalogReplicaDbContext>(optionsBuilder => optionsBuilder.UseNpgsql(replicaConnectionString));
         
         // Registrar Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();

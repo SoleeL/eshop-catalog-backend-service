@@ -2,6 +2,7 @@ using Catalog.Application.Extensions;
 using Catalog.Domain.Entities;
 using Catalog.Domain.Enums;
 using Catalog.Domain.Repositories;
+using Catalog.Infrastructure.Persistence.DbContexts;
 using Catalog.Infrastructure.Persistence.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -10,19 +11,24 @@ namespace Catalog.Infrastructure.Persistence.Repositories;
 
 public class BrandRepository : IBrandRepository
 {
-    private readonly CatalogDbContext _catalogDbContext;
+    private readonly CatalogPrimaryDbContext _catalogPrimaryDbContext;
+    private readonly CatalogReplicaDbContext _catalogReplicDbContext;
     private readonly ILogger<BrandRepository> _logger;
 
-    public BrandRepository(CatalogDbContext catalogDbContext, ILogger<BrandRepository> logger)
+    public BrandRepository(
+        CatalogPrimaryDbContext catalogPrimaryDbContext, 
+        CatalogReplicaDbContext catalogReplicDbContext,
+        ILogger<BrandRepository> logger
+        )
     {
-        _catalogDbContext = catalogDbContext;
+        _catalogPrimaryDbContext = catalogPrimaryDbContext;
+        _catalogReplicDbContext = catalogReplicDbContext;
         _logger = logger;
     }
 
     public async Task AddAsync(BrandEntity brandEntity)
     {
-        _catalogDbContext.UsePrimaryConnection();
-        await _catalogDbContext.Brand.AddAsync(brandEntity);
+        await _catalogPrimaryDbContext.Brand.AddAsync(brandEntity);
     }
 
     public async Task<(IEnumerable<BrandEntity>, int)> GetPageAsync(
@@ -34,8 +40,7 @@ public class BrandRepository : IBrandRepository
         int size
     )
     {
-        _catalogDbContext.UseReplicaConnection();
-        IQueryable<BrandEntity> queryable = _catalogDbContext.Brand.AsNoTracking().AsQueryable();
+        IQueryable<BrandEntity> queryable = _catalogReplicDbContext.Brand.AsNoTracking().AsQueryable();
 
         if (enabled != null) queryable = queryable.Where(b => b.Enabled == enabled);
 
@@ -78,7 +83,6 @@ public class BrandRepository : IBrandRepository
 
     public async Task<bool> BrandNameExistsAsync(string name)
     {
-        _catalogDbContext.UseReplicaConnection();
-        return await _catalogDbContext.Brand.AnyAsync(b => b.Name.ToLower() == name);
+        return await _catalogReplicDbContext.Brand.AnyAsync(b => b.Name.ToLower() == name);
     }
 }

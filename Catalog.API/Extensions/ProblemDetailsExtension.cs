@@ -8,6 +8,8 @@ public static class ProblemDetailsExtension
     {
         builder.Services.AddExceptionHandler<BadHttpRequestExceptionHandler>();
         builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
+        builder.Services.AddExceptionHandler<DbConnectionExceptionHandler>();
+        builder.Services.AddExceptionHandler<DbTransactionExceptionHandler>();
         builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
         builder.Services.AddProblemDetails();
     }
