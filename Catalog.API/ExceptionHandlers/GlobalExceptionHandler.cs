@@ -24,17 +24,16 @@ internal sealed class GlobalExceptionHandler : IExceptionHandler
         _logger.LogError(exception, "Exception type: {Exception}", exception.GetType().Name);
         _logger.LogError(exception, "Exception occurred: {Message}", exception.Message);
 
-        BaseResponseDto<ProblemDetails> baseResponseDto = new BaseResponseDto<ProblemDetails>()
-        {
-            Succcess = false,
-            Data = new ProblemDetails
+        BaseResponseDto<ProblemDetails> baseResponseDto = new BaseResponseDto<ProblemDetails>(
+            false,
+            new ProblemDetails
             {
                 Type = exception.InnerException?.GetType().Name,
                 Title = exception.Message,
                 Detail = exception.InnerException?.Message
             },
-            Message = "Server error"
-        };
+            "Server error"
+        );
 
         httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
 

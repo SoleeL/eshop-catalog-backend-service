@@ -37,41 +37,36 @@ public class CreateBrandCommandHandler : IRequestHandler<CreateBrandCommand, Bas
 
     public async Task<BaseResponseDto<BrandResponseDto>> Handle(CreateBrandCommand request, CancellationToken cancellationToken)
     {
-        
-        await _unitOfWork.BeginTransactionAsync(cancellationToken);
-        // BUG: Si el host de la db esta caida o no alcanzable, esto devuelve informacion innecesaria al usuario
-
-        // Crear la entidad BrandEntity
+        // Crear la entidad BrandEntity -> TODO: Mapper de CreateBrandCommand a BrandEntity??
         BrandEntity brandEntity = new BrandEntity
         {
             Name = request.Name,
             Description = request.Description
         };
         
-        // Agregar la nueva marca a la base de datos
-        await _brandRepository.AddAsync(brandEntity);
-
-        // Puedes realizar otras modificaciones aquí si es necesario (segundo posible cambio)
-        // await _inventoryRepository.UpdateStockAsync(request.ProductId, request.Quantity);
-        
         try
         {
+            await _unitOfWork.BeginTransactionAsync(cancellationToken);
+
+            // Agregar la nueva marca a la base de datos
+            await _brandRepository.AddAsync(brandEntity);
+
+            // Puedes realizar otras modificaciones aquí si es necesario (segundo posible cambio)
+            // await _inventoryRepository.UpdateStockAsync(request.ProductId, request.Quantity);
+            
             // Confirmar la transacción
             await _unitOfWork.CommitAsync(cancellationToken);
             
             if (brandEntity.Id == Guid.Empty) throw new EntityException("Brand could not be created. Please try again.");
         }
-        catch (Exception exception)
+        catch (Exception)
         {
             // Si hay un error, revertir la transacción
             await _unitOfWork.RollbackAsync(cancellationToken);
-            throw exception;
+            throw;
         }
-        
-        BaseResponseDto<BrandResponseDto> baseResponseDto = new BaseResponseDto<BrandResponseDto>()
-        {
-            Data = CatalogMapper.Mapper.Map<BrandResponseDto>(brandEntity)
-        };
+
+        BaseResponseDto<BrandResponseDto> baseResponseDto = new BaseResponseDto<BrandResponseDto>(CatalogMapper.Mapper.Map<BrandResponseDto>(brandEntity));
         
         return baseResponseDto;
     }

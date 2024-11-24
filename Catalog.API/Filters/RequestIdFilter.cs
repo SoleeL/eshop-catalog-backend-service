@@ -6,7 +6,7 @@ public class RequestIdFilter: IEndpointFilter
 {
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {
-        BaseResponseDto<string> baseResponseDto = new BaseResponseDto<string>();
+        BaseResponseDto<string> baseResponseDto = new BaseResponseDto<string>(null);
         baseResponseDto.Succcess = false;
 
         // README: El metodo que controla el proceso de respuesta a la request tiene a "X-RequestId" como parametro,

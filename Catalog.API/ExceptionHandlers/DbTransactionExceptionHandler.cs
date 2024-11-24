@@ -22,7 +22,8 @@ public class DbTransactionExceptionHandler : IExceptionHandler
         Exception exception,
         CancellationToken cancellationToken)
     {
-        if (exception is not (DbException or DbUpdateException or EntityException or DataException or ConstraintException or EntityException)) return false;
+        if (exception is not (DbException or DbUpdateException or EntityException or DataException
+            or ConstraintException or EntityException)) return false;
 
         _logger.LogError(exception, "Exception type: {Exception}", exception.GetType().Name);
         _logger.LogError(exception, "Exception occurred: {Message}", exception.Message);
@@ -35,17 +36,16 @@ public class DbTransactionExceptionHandler : IExceptionHandler
                 exception.InnerException.Message);
         }
 
-        BaseResponseDto<ProblemDetails> baseResponseDto = new BaseResponseDto<ProblemDetails>()
-        {
-            Succcess = false,
-            Data = new ProblemDetails
+        BaseResponseDto<ProblemDetails> baseResponseDto = new BaseResponseDto<ProblemDetails>(
+            false,
+            new ProblemDetails
             {
                 Type = exception.InnerException?.GetType().Name ?? exception.GetType().Name,
                 Title = exception.Message,
                 Detail = exception.InnerException?.Message ?? null
             },
-            Message = "Database transaction error"
-        };
+            "Database transaction error"
+        );
 
         httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
         await httpContext.Response.WriteAsJsonAsync(baseResponseDto, cancellationToken);

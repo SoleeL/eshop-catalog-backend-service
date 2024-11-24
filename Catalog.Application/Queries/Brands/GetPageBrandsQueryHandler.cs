@@ -38,7 +38,8 @@ public class GetPageBrandsQuery : BaseQuery<BaseResponseDto<IEnumerable<BrandRes
     }
 }
 
-public class GetPageBrandsQueryHandler : IRequestHandler<GetPageBrandsQuery, BaseResponseDto<IEnumerable<BrandResponseDto>>>
+public class
+    GetPageBrandsQueryHandler : IRequestHandler<GetPageBrandsQuery, BaseResponseDto<IEnumerable<BrandResponseDto>>>
 {
     private readonly IBrandRepository _brandRepository;
 
@@ -52,8 +53,6 @@ public class GetPageBrandsQueryHandler : IRequestHandler<GetPageBrandsQuery, Bas
         CancellationToken cancellationToken
     )
     {
-        BaseResponseDto<IEnumerable<BrandResponseDto>> baseResponseDto = new BaseResponseDto<IEnumerable<BrandResponseDto>>();
-
         (IEnumerable<BrandEntity> brandEntities, int totalItemCount) = await _brandRepository.GetPageAsync(
             request.Enabled,
             Enum.TryParse(request.Approval, out Approval approvalParsed) ? approvalParsed : null,
@@ -65,9 +64,11 @@ public class GetPageBrandsQueryHandler : IRequestHandler<GetPageBrandsQuery, Bas
 
         IEnumerable<BrandResponseDto> brandResponseDtos = CatalogMapper.Mapper.Map<IEnumerable<BrandResponseDto>>(brandEntities);
 
-        baseResponseDto.Data = brandResponseDtos;
-        baseResponseDto.TotalItemCount = totalItemCount;
-        
+        BaseResponseDto<IEnumerable<BrandResponseDto>> baseResponseDto = new BaseResponseDto<IEnumerable<BrandResponseDto>>(
+            brandResponseDtos,
+            totalItemCount
+        );
+
         return baseResponseDto;
     }
 }

@@ -33,13 +33,12 @@ internal sealed class ValidationExceptionHandler : IExceptionHandler
                 })
             .ToList();
 
-        BaseResponseDto<List<ValidationErrorDto>> baseResponseDto = new BaseResponseDto<List<ValidationErrorDto>>
-        {
-            Succcess = false,
-            Data = validationErrors,
-            Message = "Validation error"
-        };
-
+        BaseResponseDto<List<ValidationErrorDto>> baseResponseDto = new BaseResponseDto<List<ValidationErrorDto>>(
+            false,
+            validationErrors,
+            "Validation error"
+        );
+        
         httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
         await httpContext.Response.WriteAsJsonAsync(baseResponseDto, cancellationToken);
 

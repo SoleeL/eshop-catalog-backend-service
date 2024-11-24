@@ -23,7 +23,7 @@ internal sealed class BadHttpRequestExceptionHandler : IExceptionHandler
         string errorDetail = badHttpRequestException.Message;
 
         ValidationErrorDto validationErrorDto = new ValidationErrorDto();
-        
+
         if (errorDetail.Contains("JSON"))
         {
             validationErrorDto.PropertyName = "Request body";
@@ -34,7 +34,7 @@ internal sealed class BadHttpRequestExceptionHandler : IExceptionHandler
         {
             validationErrorDto.PropertyName = "Header";
             validationErrorDto.ErrorMessage = "The Content-Length header is invalid";
-            validationErrorDto.AttemptedValue = httpContext.Request.Headers["Content-Length"].ToString();;
+            validationErrorDto.AttemptedValue = httpContext.Request.Headers["Content-Length"].ToString();
         }
         else if (errorDetail.Contains("Request body too large"))
         {
@@ -52,14 +52,13 @@ internal sealed class BadHttpRequestExceptionHandler : IExceptionHandler
         {
             return false;
         }
-        
-        BaseResponseDto<ValidationErrorDto> response = new BaseResponseDto<ValidationErrorDto>
-        {
-            Succcess = false,
-            Data = validationErrorDto,
-            Message = "An error occurred while processing the request"
-        };
 
+        BaseResponseDto<ValidationErrorDto> response = new BaseResponseDto<ValidationErrorDto>(
+            false,
+            validationErrorDto,
+            "An error occurred while processing the request"
+        );
+        
         httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
         await httpContext.Response.WriteAsJsonAsync(response, cancellationToken);
 

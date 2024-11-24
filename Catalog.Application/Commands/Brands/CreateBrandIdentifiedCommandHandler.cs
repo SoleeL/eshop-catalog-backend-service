@@ -19,6 +19,6 @@ public class CreateBrandIdentifiedCommandHandler : IdentifiedCommandHandler<Crea
     protected override BaseResponseDto<BrandResponseDto> CreateResultForDuplicateRequest()
     {
         // TODO
-        return new BaseResponseDto<BrandResponseDto>(); // Ignore duplicate requests for creating order.
+        return new BaseResponseDto<BrandResponseDto>(null); // Ignore duplicate requests for creating order.
     }
 }

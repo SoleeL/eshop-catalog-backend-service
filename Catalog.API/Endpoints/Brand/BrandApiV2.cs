@@ -47,15 +47,9 @@ public static class BrandApiV2
             requestCreateBrand);
 
         BaseResponseDto<BrandResponseDto> brandResponseDto = await catalogServices.Mediator.Send(requestCreateBrand);
-
-        if (brandResponseDto is { Succcess: true, Data: not null })
-        {
-            catalogServices.Logger.LogInformation("CreateBrandCommand succeeded - BrandId: {BrandId}", brandResponseDto.Data.Id);
-            return TypedResults.Created($"/api/brand/{brandResponseDto.Data.Id}",brandResponseDto);
-        }
         
-        catalogServices.Logger.LogWarning("CreateBrandCommand failed");
-        return TypedResults.BadRequest(brandResponseDto);
+        catalogServices.Logger.LogInformation("CreateBrandCommand succeeded - BrandId: {BrandId}", brandResponseDto.Data.Id);
+        return TypedResults.Created($"/api/brand/{brandResponseDto.Data.Id}",brandResponseDto);
     }
     
     private static IResult GetAllBrands() => Results.Ok(new[] { "BrandA", "BrandB", "BrandC" });
