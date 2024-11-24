@@ -5,6 +5,7 @@ using Catalog.Application.Mappers;
 using Catalog.Domain;
 using Catalog.Domain.Entities;
 using Catalog.Domain.Repositories;
+using Catalog.Domain.Shared;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -57,12 +58,15 @@ public class CreateBrandCommandHandler : IRequestHandler<CreateBrandCommand, Bas
             // Confirmar la transacción
             await _unitOfWork.CommitAsync(cancellationToken);
             
-            if (brandEntity.Id == Guid.Empty) throw new EntityException("Brand could not be created. Please try again.");
+            if (brandEntity.Id == Guid.Empty) throw new EntityException("Brand not be created. Please try again.");
         }
-        catch (Exception)
+        catch (Exception exception)
         {
+            // La OperationCanceledException no es tratada por defecto como una excepción grave o no controlada, por lo que
+            // puede no llegar al manejador global de excepciones. Deberás capturarla explícitamente en tu código.
+            
             // Si hay un error, revertir la transacción
-            await _unitOfWork.RollbackAsync(cancellationToken);
+            await _unitOfWork.RollbackAsync();
             throw;
         }
 

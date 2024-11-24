@@ -1,5 +1,6 @@
 using Catalog.Domain;
 using Catalog.Domain.Repositories;
+using Catalog.Domain.Shared;
 using Catalog.Infrastructure.Persistence;
 using Catalog.Infrastructure.Persistence.DbContexts;
 using Catalog.Infrastructure.Persistence.Repositories;

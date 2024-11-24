@@ -18,9 +18,6 @@ builder.AddMediatorServices();
 // Agregar servicio de mensajes de error para el usuario
 builder.AddProblemDetails();
 
-// TODO
-// builder.Services.AddValidatorsFromAssemblyContaining<Program>();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -26,14 +26,9 @@ public static class BrandApiV1
     private static async Task<IResult> CreateBrandAsync(
         CancellationToken cancellationToken,
         [AsParameters] CatalogServices catalogServices,
-        [FromBody] BrandCreateDto brandCreateDto // TODO: Agregar middlerware para control de excepcion por no envio de json en el la request post
+        [FromBody] CreateBrandCommand createBrandCommand
     )
     {
-        catalogServices.Logger.LogInformation("Sending command: {CommandName} - {nameProperty}: {CommandId}",
-            brandCreateDto.GetGenericTypeName(), nameof(brandCreateDto.Name), brandCreateDto.Name);
-
-        CreateBrandCommand createBrandCommand = new CreateBrandCommand(brandCreateDto.Name, brandCreateDto.Description);
-
         // README: Implementando creacion de marca sin idempotencia a traves del CreateBrandCommand
         BaseResponseDto<BrandResponseDto> brandResponseDto = await catalogServices.Mediator.Send(createBrandCommand, cancellationToken);
         // IMPORTANT: Sobre metodo .Send(
@@ -48,18 +43,11 @@ public static class BrandApiV1
         //      Si queremos poder evitar que un proceso se finalice si la request fue cancelada o descartada por el
         //          cliente, se debe ser explícito al pasar el CancellationToken desde el endpoint a nuestro handler.
 
-        if (brandResponseDto is { Succcess: true, Data: not null })
-        {
-            catalogServices.Logger.LogInformation("CreateBrandCommand succeeded - BrandId: {BrandId}",
-                brandResponseDto.Data.Id);
-            return TypedResults.Created($"/api/brand/{brandResponseDto.Data.Id}", brandResponseDto);
-        }
-
-        catalogServices.Logger.LogWarning("CreateBrandCommand failed");
-        return TypedResults.BadRequest(brandResponseDto);
+        return TypedResults.Created($"/api/brand/{brandResponseDto.Data.Id}", brandResponseDto);
     }
 
     private static async Task<IResult> GetPageBrands(
+        CancellationToken cancellationToken,
         [AsParameters] CatalogServices catalogServices,
         [FromQuery] bool? enabled,
         [FromQuery] string? approval,
@@ -78,17 +66,9 @@ public static class BrandApiV1
             size: size
         );
 
-        BaseResponseDto<IEnumerable<BrandResponseDto>> brandResponseDto = await catalogServices.Mediator.Send(getPageBrandsQuery);
-
-        if (brandResponseDto is { Succcess: true, Data: not null })
-        {
-            catalogServices.Logger.LogInformation("GetAllBrandsQuery succeeded - Brand obtained");
-            catalogServices.HttpContext.PaginateAsync(brandResponseDto.TotalItemCount, getPageBrandsQuery.Page, getPageBrandsQuery.Size);
-            return TypedResults.Ok(brandResponseDto);
-        }
-
-        catalogServices.Logger.LogWarning("GetAllBrandsQuery failed");
-        return TypedResults.BadRequest(brandResponseDto);
+        BaseResponseDto<IEnumerable<BrandResponseDto>> brandResponseDto = await catalogServices.Mediator.Send(getPageBrandsQuery, cancellationToken);
+        catalogServices.HttpContext.PaginateAsync(brandResponseDto.TotalItemCount, getPageBrandsQuery.Page, getPageBrandsQuery.Size);
+        return TypedResults.Ok(brandResponseDto);
     }
 
     private static IResult GetBrandById(int id) => Results.Ok($"Brand {id} from v1");

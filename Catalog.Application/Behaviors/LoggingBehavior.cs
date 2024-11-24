@@ -21,5 +21,31 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
 
         return response;
     }
+    
+    // Al ingresar
+    // catalogServices.Logger.LogInformation("Sending command: {CommandName} - {nameProperty}: {CommandId}", // README: ESTO NO INTERESA, YA ESTA EL LOGGER DE COMPORTAMIENTO
+    //     brandCreateDto.GetGenericTypeName(), nameof(brandCreateDto.Name), brandCreateDto.Name);
+
+    // Al finalizar
+    // if (brandResponseDto is { Succcess: true, Data: not null })
+    // {
+    //     catalogServices.Logger.LogInformation("CreateBrandCommand succeeded - BrandId: {BrandId}",
+    //         brandResponseDto.Data.Id);
+    //     return TypedResults.Created($"/api/brand/{brandResponseDto.Data.Id}", brandResponseDto);
+    // }
+    //
+    // catalogServices.Logger.LogWarning("CreateBrandCommand failed");
+    // return TypedResults.BadRequest(brandResponseDto);
+    
+    // AL finalizar la obtencion:
+    // if (brandResponseDto is { Succcess: true, Data: not null })
+    // {
+    //     catalogServices.Logger.LogInformation("GetAllBrandsQuery succeeded - Brand obtained");
+    //     catalogServices.HttpContext.PaginateAsync(brandResponseDto.TotalItemCount, getPageBrandsQuery.Page, getPageBrandsQuery.Size);
+    //     return TypedResults.Ok(brandResponseDto);
+    // }
+    //
+    // catalogServices.Logger.LogWarning("GetAllBrandsQuery failed");
+    // return TypedResults.BadRequest(brandResponseDto);
 }
 

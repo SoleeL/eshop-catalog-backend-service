@@ -54,6 +54,7 @@ public class
     )
     {
         (IEnumerable<BrandEntity> brandEntities, int totalItemCount) = await _brandRepository.GetPageAsync(
+            cancellationToken,
             request.Enabled,
             Enum.TryParse(request.Approval, out Approval approvalParsed) ? approvalParsed : null,
             request.Search,

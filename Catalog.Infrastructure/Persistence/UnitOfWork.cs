@@ -1,4 +1,5 @@
 using Catalog.Domain;
+using Catalog.Domain.Shared;
 using Catalog.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -20,26 +21,21 @@ public class UnitOfWork : IUnitOfWork
 
     public async Task BeginTransactionAsync(CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested(); // Verificar si se canceló la request por el cliente o otro motivo
-        // La OperationCanceledException no es tratada por defecto como una excepción grave o no controlada, por lo que
-        // puede no llegar al manejador global de excepciones. Deberás capturarla explícitamente en tu código.
-        
         _dbContextTransaction = await _catalogPrimaryDbContext.Database.BeginTransactionAsync(cancellationToken);
     }
     
     public async Task CommitAsync(CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested(); // Verificar si se canceló la request por el cliente o otro motivo
         await _catalogPrimaryDbContext.SaveChangesAsync(cancellationToken);
         await _dbContextTransaction.CommitAsync(cancellationToken);
         await _dbContextTransaction.DisposeAsync();
     }
 
-    public async Task RollbackAsync(CancellationToken cancellationToken)
+    public async Task RollbackAsync()
     {
-        // IMPORTANT: EL LA CANCELLATIONTOKEN MOLESTA AQUI, NO DEJA REALIZAR EL ROLLBACK
-        // cancellationToken.ThrowIfCancellationRequested(); // Verificar si se canceló la request por el cliente o otro motivo
-        await _dbContextTransaction.RollbackAsync(cancellationToken);
+        // README: No pasar el CancellationToken ya que interfiere con el rollback. Si se le pasa y el RollbackAsync
+        // no se ejecuta, se podrian generar problemas de integridad de datos.
+        await _dbContextTransaction.RollbackAsync();
         await _dbContextTransaction.DisposeAsync();
     }
 }

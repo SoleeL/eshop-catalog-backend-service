@@ -32,6 +32,7 @@ public class BrandRepository : IBrandRepository
     }
 
     public async Task<(IEnumerable<BrandEntity>, int)> GetPageAsync(
+        CancellationToken cancellationToken,
         bool? enabled,
         Approval? approval,
         string? search,
@@ -56,13 +57,15 @@ public class BrandRepository : IBrandRepository
 
         if (sort.Any()) queryable = queryable.OrderByColumns(sort);
 
-        int totalCount = await queryable.CountAsync();
+        // _logger.LogInformation("Query expression: {QueryExpression}", queryable.ToQueryString());
+        
+        // README: Si cancellationToken = true entonces la query no se ejecuta o EF intenta evitar que siga su ejecucion, y
+        // dispara el OperationCanceledException por la cancelacion de la request
+        int totalCount = await queryable.CountAsync(cancellationToken);
         IEnumerable<BrandEntity> brands = await queryable
             .PageBy(page, size)
-            .ToListAsync();
-
-        _logger.LogInformation("Query expression: {QueryExpression}", queryable.ToQueryString());
-
+            .ToListAsync(cancellationToken);
+        
         return (brands, totalCount);
     }
 

@@ -9,6 +9,7 @@ public interface IBrandRepository
     Task AddAsync(BrandEntity brandEntity);
 
     Task<(IEnumerable<BrandEntity>, int)> GetPageAsync(
+        CancellationToken cancellationToken,
         bool? enabled,
         Approval? approval,
         string? search,
