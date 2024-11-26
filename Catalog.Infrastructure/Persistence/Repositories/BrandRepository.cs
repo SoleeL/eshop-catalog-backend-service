@@ -26,6 +26,12 @@ public class BrandRepository : IBrandRepository
         _logger = logger;
     }
 
+    public async Task AddWithSaveChange(BrandEntity brandEntity, CancellationToken cancellationToken = default)
+    {
+        await _catalogPrimaryDbContext.Brand.AddAsync(brandEntity, cancellationToken);
+        await _catalogPrimaryDbContext.SaveChangesAsync(cancellationToken);
+    }
+    
     public async Task AddAsync(BrandEntity brandEntity)
     {
         await _catalogPrimaryDbContext.Brand.AddAsync(brandEntity);

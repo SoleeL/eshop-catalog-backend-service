@@ -6,6 +6,7 @@ namespace Catalog.Domain.Repositories;
 
 public interface IBrandRepository
 {
+    Task AddWithSaveChange(BrandEntity brandEntity, CancellationToken cancellationToken = default);
     Task AddAsync(BrandEntity brandEntity);
 
     Task<(IEnumerable<BrandEntity>, int)> GetPageAsync(
