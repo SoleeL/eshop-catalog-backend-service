@@ -1,20 +1,23 @@
+using Catalog.Application.Dtos;
+using Catalog.Application.Dtos.Entities;
+using Catalog.Application.Mappers;
 using Catalog.Domain.Entities;
 using Catalog.Domain.Repositories;
 using MediatR;
 
 namespace Catalog.Application.Commands.Brands;
 
-public class DeleteBrandCommand : IRequest<bool>
+public class DeleteBrandCommand : IRequest<BaseResponseDto<BrandResponseDto>>
 {
-    public Guid Id { get; set; }
+    public Guid Guid { get; set; }
 
-    public DeleteBrandCommand(Guid id)
+    public DeleteBrandCommand(Guid guid)
     {
-        Id = id;
+        Guid = guid;
     }
 }
 
-public class DeleteBrandCommandHandler : IRequestHandler<DeleteBrandCommand, bool>
+public class DeleteBrandCommandHandler : IRequestHandler<DeleteBrandCommand, BaseResponseDto<BrandResponseDto>>
 {
     private readonly IBrandRepository _brandRepository;
 
@@ -23,13 +26,20 @@ public class DeleteBrandCommandHandler : IRequestHandler<DeleteBrandCommand, boo
         _brandRepository = brandRepository;
     }
 
-    public async Task<bool> Handle(DeleteBrandCommand request, CancellationToken cancellationToken)
+    public async Task<BaseResponseDto<BrandResponseDto>> Handle(DeleteBrandCommand request, CancellationToken cancellationToken)
     {
-        BrandEntity? brandEntity = await _brandRepository.GetByIdAsync(request.Id);
-
-        if (brandEntity == null) return false;
-
-        await _brandRepository.DeleteAsync(request.Id);
-        return true;
+        BrandEntity? brandEntity = await _brandRepository.DeleteWithSaveChange(request.Guid, cancellationToken);
+        
+        BrandResponseDto brandResponseDto = CatalogMapper.Mapper.Map<BrandResponseDto>(brandEntity);
+        
+        BaseResponseDto<BrandResponseDto> baseResponseDto = new BaseResponseDto<BrandResponseDto>(brandResponseDto);
+        
+        if (brandEntity == null)
+        {
+            baseResponseDto.Succcess = false;
+            baseResponseDto.Message = "Brand does not exist";
+        }
+        
+        return baseResponseDto;
     }
 }

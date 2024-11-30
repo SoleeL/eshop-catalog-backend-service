@@ -18,7 +18,15 @@ public static class BrandApiV1
 
         api.MapGet("/", GetPageBrands);
 
-        api.MapGet("/{id:int}", GetBrandById);
+        api.MapGet("/{guid:Guid}", GetBrandById);
+
+        // api.MapPut("/{id:int}", ChangeBrandById); // Actualización completa del recurso
+
+        // api.MapPatch("/{id:int}", UpdateBrandById); // Actualización parcial del recurso
+
+        api.MapDelete("/{guid:Guid}", DeleteBrandById);
+        
+        // TODO: Evaluar comportamietno esperado del CRUD
 
         return app;
     }
@@ -30,7 +38,9 @@ public static class BrandApiV1
     )
     {
         // README: Implementando creacion de marca sin idempotencia a traves del CreateBrandCommand
-        BaseResponseDto<BrandResponseDto> brandResponseDto = await catalogServices.Mediator.Send(createBrandCommand, cancellationToken);
+        BaseResponseDto<BrandResponseDto> brandResponseDto = await catalogServices.Mediator.Send(
+            createBrandCommand, 
+            cancellationToken);
         // IMPORTANT: Sobre metodo .Send(
         // La definicion del metodo .Send( es:
         // public abstract Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default(CancellationToken))
@@ -66,10 +76,51 @@ public static class BrandApiV1
             size: size
         );
 
-        BaseResponseDto<IEnumerable<BrandResponseDto>> brandResponseDto = await catalogServices.Mediator.Send(getPageBrandsQuery, cancellationToken);
-        catalogServices.HttpContext.PaginateAsync(brandResponseDto.TotalItemCount, getPageBrandsQuery.Page, getPageBrandsQuery.Size);
+        BaseResponseDto<IEnumerable<BrandResponseDto>> brandResponseDto = await catalogServices.Mediator.Send(
+            getPageBrandsQuery,
+            cancellationToken);
+
+        catalogServices.HttpContext.PaginateAsync(
+            brandResponseDto.TotalItemCount,
+            getPageBrandsQuery.Page,
+            getPageBrandsQuery.Size);
+
         return TypedResults.Ok(brandResponseDto);
     }
 
-    private static IResult GetBrandById(int id) => Results.Ok($"Brand {id} from v1");
+    private static async Task<IResult> GetBrandById(
+        CancellationToken cancellationToken,
+        [AsParameters] CatalogServices catalogServices,
+        [FromRoute] Guid guid
+    )
+    {
+        GetBrandByIdQuery getBrandByIdQuery = new GetBrandByIdQuery(guid);
+
+        BaseResponseDto<BrandResponseDto> brandResponseDto = await catalogServices.Mediator.Send(
+            getBrandByIdQuery,
+            cancellationToken);
+
+        if (brandResponseDto.Succcess == false) return TypedResults.NotFound(brandResponseDto);
+        
+        return TypedResults.Ok(brandResponseDto);
+    }
+
+    private static async Task<IResult> UpdateBrandById(int id) => Results.Ok($"Brand {id} from v1");
+
+    private static async Task<IResult> DeleteBrandById(
+        CancellationToken cancellationToken,
+        [AsParameters] CatalogServices catalogServices,
+        [FromRoute] Guid guid
+    )
+    {
+        DeleteBrandCommand deleteBrandCommand = new DeleteBrandCommand(guid);
+
+        BaseResponseDto<BrandResponseDto> brandResponseDto = await catalogServices.Mediator.Send(
+            deleteBrandCommand,
+            cancellationToken);
+
+        if (brandResponseDto.Succcess == false) return TypedResults.NotFound(brandResponseDto);
+        
+        return TypedResults.NoContent();
+    }
 }

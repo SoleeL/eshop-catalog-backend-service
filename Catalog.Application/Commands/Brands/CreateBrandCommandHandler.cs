@@ -4,7 +4,6 @@ using Catalog.Application.Exceptions;
 using Catalog.Application.Mappers;
 using Catalog.Domain.Entities;
 using Catalog.Domain.Repositories;
-using Catalog.Domain.Shared;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -25,17 +24,14 @@ public class CreateBrandCommand : IRequest<BaseResponseDto<BrandResponseDto>>
 public class CreateBrandCommandHandler : IRequestHandler<CreateBrandCommand, BaseResponseDto<BrandResponseDto>>
 {
     private readonly IBrandRepository _brandRepository;
-    private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CreateBrandCommandHandler> _logger;
 
     public CreateBrandCommandHandler(
         IBrandRepository brandRepository,
-        IUnitOfWork unitOfWork,
         ILogger<CreateBrandCommandHandler> logger
     )
     {
         _brandRepository = brandRepository;
-        _unitOfWork = unitOfWork;
         _logger = logger;
     }
 
@@ -44,7 +40,7 @@ public class CreateBrandCommandHandler : IRequestHandler<CreateBrandCommand, Bas
         CancellationToken cancellationToken
     )
     {
-        // Crear la entidad BrandEntity -> TODO: Mapper de CreateBrandCommand a BrandEntity??
+        // Crear la entidad BrandEntity
         BrandEntity brandEntity = CatalogMapper.Mapper.Map<BrandEntity>(request);
         
         // Agregar la nueva marca a la base de datos

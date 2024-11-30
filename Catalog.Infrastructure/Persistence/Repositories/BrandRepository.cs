@@ -16,10 +16,10 @@ public class BrandRepository : IBrandRepository
     private readonly ILogger<BrandRepository> _logger;
 
     public BrandRepository(
-        CatalogPrimaryDbContext catalogPrimaryDbContext, 
+        CatalogPrimaryDbContext catalogPrimaryDbContext,
         CatalogReplicaDbContext catalogReplicDbContext,
         ILogger<BrandRepository> logger
-        )
+    )
     {
         _catalogPrimaryDbContext = catalogPrimaryDbContext;
         _catalogReplicDbContext = catalogReplicDbContext;
@@ -31,7 +31,7 @@ public class BrandRepository : IBrandRepository
         await _catalogPrimaryDbContext.Brand.AddAsync(brandEntity, cancellationToken);
         await _catalogPrimaryDbContext.SaveChangesAsync(cancellationToken);
     }
-    
+
     public async Task AddAsync(BrandEntity brandEntity)
     {
         await _catalogPrimaryDbContext.Brand.AddAsync(brandEntity);
@@ -64,30 +64,50 @@ public class BrandRepository : IBrandRepository
         if (sort.Any()) queryable = queryable.OrderByColumns(sort);
 
         // _logger.LogInformation("Query expression: {QueryExpression}", queryable.ToQueryString());
-        
+
         // README: Si cancellationToken = true entonces la query no se ejecuta o EF intenta evitar que siga su ejecucion, y
         // dispara el OperationCanceledException por la cancelacion de la request
         int totalCount = await queryable.CountAsync(cancellationToken);
         IEnumerable<BrandEntity> brands = await queryable
             .PageBy(page, size)
             .ToListAsync(cancellationToken);
-        
+
         return (brands, totalCount);
     }
 
-    public Task<BrandEntity?> GetByIdAsync(Guid id)
+    public Task<BrandEntity?> GetByIdAsync(Guid guid, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return _catalogReplicDbContext.Brand.AsNoTracking().FirstOrDefaultAsync(
+            b => b.Id == guid,
+            cancellationToken);
     }
 
     public Task UpdateAsync(BrandEntity brand)
     {
         throw new NotImplementedException();
     }
-
-    public Task DeleteAsync(Guid id)
+    
+    public async Task<BrandEntity?> DeleteWithSaveChange(Guid guid, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        // README: Quizas usar un AsNoTracking().FirstOrDefaultAsync()
+        BrandEntity? brandEntity = await _catalogReplicDbContext.Brand.FindAsync(guid, cancellationToken);
+        
+        if (brandEntity == null) return null;
+        
+        _catalogPrimaryDbContext.Brand.Remove(brandEntity); // No es asincrono
+        await _catalogPrimaryDbContext.SaveChangesAsync(cancellationToken);
+
+        return brandEntity;
+    }
+    
+    public async Task<BrandEntity?> DeleteAsync(Guid guid)
+    {
+        BrandEntity? brandEntity = await _catalogReplicDbContext.Brand.FindAsync(guid);
+
+        if (brandEntity == null) return null;
+        
+        _catalogPrimaryDbContext.Brand.Remove(brandEntity);
+        return brandEntity;
     }
 
     public async Task<bool> BrandNameExistsAsync(string name)

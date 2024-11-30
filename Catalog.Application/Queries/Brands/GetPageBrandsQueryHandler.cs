@@ -38,8 +38,7 @@ public class GetPageBrandsQuery : BaseQuery<BaseResponseDto<IEnumerable<BrandRes
     }
 }
 
-public class
-    GetPageBrandsQueryHandler : IRequestHandler<GetPageBrandsQuery, BaseResponseDto<IEnumerable<BrandResponseDto>>>
+public class GetPageBrandsQueryHandler : IRequestHandler<GetPageBrandsQuery, BaseResponseDto<IEnumerable<BrandResponseDto>>>
 {
     private readonly IBrandRepository _brandRepository;
 

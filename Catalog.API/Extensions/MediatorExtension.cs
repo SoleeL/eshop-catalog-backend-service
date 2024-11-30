@@ -24,11 +24,14 @@ public static class MediatorExtension
         });
         
         // Agregar validadores de los comandos y queries
-        builder.Services.AddScoped<IValidator<CreateBrandCommand>, CreateBrandCommandValidator>();
+        builder.Services.AddScoped<IValidator<CreateBrandCommand>, CreateBrandCommandValidator>(); // Query de validacion con repository como Scoped
         builder.Services.AddSingleton<IValidator<GetPageBrandsQuery>, GetPageBrandsQueryValidator>();
         
         // Agregar interpretes de los comandos y queries (CQRS)
         builder.Services.AddTransient<IRequestHandler<CreateBrandCommand, BaseResponseDto<BrandResponseDto>>, CreateBrandCommandHandler>();
         builder.Services.AddTransient<IRequestHandler<GetPageBrandsQuery, BaseResponseDto<IEnumerable<BrandResponseDto>>>, GetPageBrandsQueryHandler>();
+        builder.Services.AddTransient<IRequestHandler<GetBrandByIdQuery, BaseResponseDto<BrandResponseDto>>, GetBrandByIdQueryHandler>();
+        // builder.Services.AddTransient<IRequestHandler<GetBrandByIdQuery, BaseResponseDto<BrandResponseDto>>, GetBrandByIdQueryHandler>();
+        builder.Services.AddTransient<IRequestHandler<DeleteBrandCommand, BaseResponseDto<BrandResponseDto>>, DeleteBrandCommandHandler>();
     }
 }
