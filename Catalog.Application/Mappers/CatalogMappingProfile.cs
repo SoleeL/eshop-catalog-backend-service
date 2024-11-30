@@ -9,7 +9,7 @@ public class CatalogMappingProfile : Profile
 {
     public CatalogMappingProfile()
     {
-        CreateMap<BaseEntity, BrandResponseDto>()
+        CreateMap<BaseEntity, BrandDto>()
             .ForMember(
                 destinationMember => destinationMember.Id,
                 memberOptions => memberOptions.MapFrom(sourceMember => sourceMember.Id.ToString())
@@ -23,7 +23,7 @@ public class CatalogMappingProfile : Profile
                 memberOptions => memberOptions.MapFrom(sourceMember => new DateTimeOffset(sourceMember.UpdatedAt).ToUnixTimeMilliseconds())
             );
         
-        CreateMap<BrandEntity, BrandResponseDto>().IncludeBase<BaseEntity, BrandResponseDto>();
+        CreateMap<BrandEntity, BrandDto>().IncludeBase<BaseEntity, BrandDto>();
         // .ForMember(); // TODO: AQUI ME QUEDE, HAY QUE PASAR EL Approval y limitar en la base de datos, quizas con una tabla de estados de aprovacion
         
         // Se puede simplificar el mapeo utilizando AutoMapper.

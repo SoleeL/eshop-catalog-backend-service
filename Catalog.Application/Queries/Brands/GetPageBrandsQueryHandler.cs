@@ -8,7 +8,7 @@ using MediatR;
 
 namespace Catalog.Application.Queries.Brands;
 
-public class GetPageBrandsQuery : BaseQuery<BaseResponseDto<IEnumerable<BrandResponseDto>>>
+public class GetPageBrandsQuery : BaseQuery<BaseResponseDto<IEnumerable<BrandDto>>>
 {
     public bool? Enabled { get; } // Filtration
     public string? Approval { get; } // Filtration // Necesita valicacion
@@ -38,7 +38,7 @@ public class GetPageBrandsQuery : BaseQuery<BaseResponseDto<IEnumerable<BrandRes
     }
 }
 
-public class GetPageBrandsQueryHandler : IRequestHandler<GetPageBrandsQuery, BaseResponseDto<IEnumerable<BrandResponseDto>>>
+public class GetPageBrandsQueryHandler : IRequestHandler<GetPageBrandsQuery, BaseResponseDto<IEnumerable<BrandDto>>>
 {
     private readonly IBrandRepository _brandRepository;
 
@@ -47,7 +47,7 @@ public class GetPageBrandsQueryHandler : IRequestHandler<GetPageBrandsQuery, Bas
         _brandRepository = brandRepository;
     }
 
-    public async Task<BaseResponseDto<IEnumerable<BrandResponseDto>>> Handle(
+    public async Task<BaseResponseDto<IEnumerable<BrandDto>>> Handle(
         GetPageBrandsQuery request,
         CancellationToken cancellationToken
     )
@@ -62,13 +62,13 @@ public class GetPageBrandsQueryHandler : IRequestHandler<GetPageBrandsQuery, Bas
             request.Size
         );
 
-        IEnumerable<BrandResponseDto> brandResponseDtos = CatalogMapper.Mapper.Map<IEnumerable<BrandResponseDto>>(brandEntities);
+        IEnumerable<BrandDto> brandDtos = CatalogMapper.Mapper.Map<IEnumerable<BrandDto>>(brandEntities);
 
-        BaseResponseDto<IEnumerable<BrandResponseDto>> baseResponseDto = new BaseResponseDto<IEnumerable<BrandResponseDto>>(
-            brandResponseDtos,
+        BaseResponseDto<IEnumerable<BrandDto>> baseResponseDtos = new BaseResponseDto<IEnumerable<BrandDto>>(
+            brandDtos,
             totalItemCount
         );
 
-        return baseResponseDto;
+        return baseResponseDtos;
     }
 }

@@ -4,12 +4,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Catalog.Infrastructure.Persistence.Configurations;
 
+// TODO: Revisar si se puede implementar una configuracion a BaseEntity
+
 public class BrandEntityTypeConfiguration : IEntityTypeConfiguration<BrandEntity>
 {
     public void Configure(EntityTypeBuilder<BrandEntity> builder)
     {
-        // TODO: Revisar si se puede implementar una configuracion a BaseEntity
-        
         builder.ToTable("brands");
 
         builder.HasKey(b => b.Id);
@@ -39,11 +39,19 @@ public class BrandEntityTypeConfiguration : IEntityTypeConfiguration<BrandEntity
         builder.Property(b => b.CreatedAt)
             .HasColumnName("created_at")
             .HasDefaultValueSql("now()")
-            .IsRequired();
+            .IsRequired()
+            // README: Generar al crear la entidad
+            // .ValueGeneratedOnAdd()
+            // Ignorar campo en modificacion/update
+            .Metadata.SetAfterSaveBehavior(Microsoft.EntityFrameworkCore.Metadata.PropertySaveBehavior.Ignore);
 
         builder.Property(b => b.UpdatedAt)
             .HasColumnName("updated_at")
             .HasDefaultValueSql("now()")
-            .IsRequired();
+            .IsRequired()
+            // README: Generar al crear la entidad o actualizar
+            // .ValueGeneratedOnAddOrUpdate()
+            // Ignorar campo en modificacion/update
+            .Metadata.SetAfterSaveBehavior(Microsoft.EntityFrameworkCore.Metadata.PropertySaveBehavior.Ignore); 
     }
 }

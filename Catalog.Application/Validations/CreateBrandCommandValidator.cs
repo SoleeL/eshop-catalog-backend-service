@@ -1,11 +1,13 @@
 using Catalog.Application.Commands.Brands;
+using Catalog.Application.Validations.Utils;
 using Catalog.Domain.Repositories;
 using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
 
 namespace Catalog.Application.Validations;
 
-public class CreateBrandCommandValidator : AbstractValidator<CreateBrandCommand>
+public class CreateBrandCommandValidator : AbstractValidator<CreateBrandCommand>, IValidatorAsync
 {
     public CreateBrandCommandValidator(IBrandRepository brandRepository, ILogger<CreateBrandCommandValidator> logger)
     {
@@ -14,7 +16,7 @@ public class CreateBrandCommandValidator : AbstractValidator<CreateBrandCommand>
             .NotNull()
             .WithMessage("Brand name cannot be null")
             .NotEmpty()
-            .WithMessage("Brand name cannot be empty")
+            .WithMessage("Brand name cannot be empty or only spaces")
             .MaximumLength(100)
             .WithMessage("Brand name must not exceed 100 characters")
             .MustAsync(async (name, cancellation) => !await brandRepository.BrandNameExistsAsync(name.ToLower()))

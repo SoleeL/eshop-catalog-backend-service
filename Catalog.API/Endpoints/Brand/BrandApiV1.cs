@@ -2,7 +2,6 @@ using Catalog.API.Extensions;
 using Catalog.Application.Commands.Brands;
 using Catalog.Application.Dtos;
 using Catalog.Application.Dtos.Entities;
-using Catalog.Application.Extensions;
 using Catalog.Application.Queries.Brands;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,11 +21,9 @@ public static class BrandApiV1
 
         // api.MapPut("/{id:int}", ChangeBrandById); // Actualización completa del recurso
 
-        // api.MapPatch("/{id:int}", UpdateBrandById); // Actualización parcial del recurso
+        api.MapPatch("/{guid:Guid}", UpdateBrandById); // Actualización parcial del recurso
 
         api.MapDelete("/{guid:Guid}", DeleteBrandById);
-        
-        // TODO: Evaluar comportamietno esperado del CRUD
 
         return app;
     }
@@ -38,7 +35,7 @@ public static class BrandApiV1
     )
     {
         // README: Implementando creacion de marca sin idempotencia a traves del CreateBrandCommand
-        BaseResponseDto<BrandResponseDto> brandResponseDto = await catalogServices.Mediator.Send(
+        BaseResponseDto<BrandDto> brandResponseDto = await catalogServices.Mediator.Send(
             createBrandCommand, 
             cancellationToken);
         // IMPORTANT: Sobre metodo .Send(
@@ -76,7 +73,7 @@ public static class BrandApiV1
             size: size
         );
 
-        BaseResponseDto<IEnumerable<BrandResponseDto>> brandResponseDto = await catalogServices.Mediator.Send(
+        BaseResponseDto<IEnumerable<BrandDto>> brandResponseDto = await catalogServices.Mediator.Send(
             getPageBrandsQuery,
             cancellationToken);
 
@@ -96,7 +93,7 @@ public static class BrandApiV1
     {
         GetBrandByIdQuery getBrandByIdQuery = new GetBrandByIdQuery(guid);
 
-        BaseResponseDto<BrandResponseDto> brandResponseDto = await catalogServices.Mediator.Send(
+        BaseResponseDto<BrandDto> brandResponseDto = await catalogServices.Mediator.Send(
             getBrandByIdQuery,
             cancellationToken);
 
@@ -104,9 +101,30 @@ public static class BrandApiV1
         
         return TypedResults.Ok(brandResponseDto);
     }
+    
+    // Respuestas esperadas para el método de actualización (PUT o PATCH).
+    // Casos y códigos de estado:
+    // 1.- Actualización exitosa: 200 OK - El recurso fue actualizado y se devuelve en la respuesta.
+    // 2.- No encontrado: 404 Not Found - El recurso solicitado no existe.
+    // 3.- Datos inválidos: 400 Bad Request - Los datos proporcionados en la solicitud no son válidos.
+    // 4.- Conflicto: 409 Conflict - Violación de reglas del negocio o estado inconsistente.
+    private static async Task<IResult> UpdateBrandById(        
+        CancellationToken cancellationToken,
+        [AsParameters] CatalogServices catalogServices,
+        [FromRoute] Guid guid,
+        [FromBody] UpdateBrandCommand updateBrandCommand
+    )
+    {
+        updateBrandCommand.Guid = guid;
+        BaseResponseDto<BrandDto> brandResponseDto = await catalogServices.Mediator.Send(
+            updateBrandCommand,
+            cancellationToken);
 
-    private static async Task<IResult> UpdateBrandById(int id) => Results.Ok($"Brand {id} from v1");
-
+        if (brandResponseDto.Succcess == false) return TypedResults.NotFound(brandResponseDto);
+        
+        return TypedResults.Ok(brandResponseDto);
+    }
+    
     private static async Task<IResult> DeleteBrandById(
         CancellationToken cancellationToken,
         [AsParameters] CatalogServices catalogServices,
@@ -115,7 +133,7 @@ public static class BrandApiV1
     {
         DeleteBrandCommand deleteBrandCommand = new DeleteBrandCommand(guid);
 
-        BaseResponseDto<BrandResponseDto> brandResponseDto = await catalogServices.Mediator.Send(
+        BaseResponseDto<BrandDto> brandResponseDto = await catalogServices.Mediator.Send(
             deleteBrandCommand,
             cancellationToken);
 

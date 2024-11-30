@@ -7,7 +7,7 @@ namespace Catalog.Domain.Repositories;
 public interface IBrandRepository
 {
     Task AddWithSaveChange(BrandEntity brandEntity, CancellationToken cancellationToken = default);
-    
+
     Task AddAsync(BrandEntity brandEntity);
 
     Task<(IEnumerable<BrandEntity>, int)> GetPageAsync(
@@ -20,14 +20,27 @@ public interface IBrandRepository
         int size
     );
 
-    Task<BrandEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<BrandEntity?> GetByIdAsync(Guid guid, CancellationToken cancellationToken = default);
 
-    Task UpdateAsync(BrandEntity brand);
+    Task<BrandEntity?> UpdateWithSaveChange(
+        Guid guid,
+        string? name,
+        string? description,
+        bool? enabled,
+        Approval? approval,
+        CancellationToken cancellationToken = default);
 
-    Task<BrandEntity?> DeleteWithSaveChange(Guid id, CancellationToken cancellationToken = default);
-    
-    Task<BrandEntity?> DeleteAsync(Guid id);
-    
+    Task<BrandEntity?> UpdateAsync(
+        Guid guid,
+        string? name,
+        string? description,
+        bool? enabled,
+        Approval? approval);
+
+    Task<BrandEntity?> DeleteWithSaveChange(Guid guid, CancellationToken cancellationToken = default);
+
+    Task<BrandEntity?> DeleteAsync(Guid guid);
+
     // Internal utils
     Task<bool> BrandNameExistsAsync(string name);
 }

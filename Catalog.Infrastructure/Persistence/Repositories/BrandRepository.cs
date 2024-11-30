@@ -12,7 +12,7 @@ namespace Catalog.Infrastructure.Persistence.Repositories;
 public class BrandRepository : IBrandRepository
 {
     private readonly CatalogPrimaryDbContext _catalogPrimaryDbContext;
-    private readonly CatalogReplicaDbContext _catalogReplicDbContext;
+    private readonly CatalogReplicaDbContext _catalogReplicaDbContext;
     private readonly ILogger<BrandRepository> _logger;
 
     public BrandRepository(
@@ -22,7 +22,7 @@ public class BrandRepository : IBrandRepository
     )
     {
         _catalogPrimaryDbContext = catalogPrimaryDbContext;
-        _catalogReplicDbContext = catalogReplicDbContext;
+        _catalogReplicaDbContext = catalogReplicDbContext;
         _logger = logger;
     }
 
@@ -47,7 +47,7 @@ public class BrandRepository : IBrandRepository
         int size
     )
     {
-        IQueryable<BrandEntity> queryable = _catalogReplicDbContext.Brand.AsNoTracking().AsQueryable();
+        IQueryable<BrandEntity> queryable = _catalogReplicaDbContext.Brand.AsNoTracking().AsQueryable();
 
         if (enabled != null) queryable = queryable.Where(b => b.Enabled == enabled);
 
@@ -77,41 +77,80 @@ public class BrandRepository : IBrandRepository
 
     public Task<BrandEntity?> GetByIdAsync(Guid guid, CancellationToken cancellationToken = default)
     {
-        return _catalogReplicDbContext.Brand.AsNoTracking().FirstOrDefaultAsync(
+        return _catalogReplicaDbContext.Brand.AsNoTracking().FirstOrDefaultAsync(
             b => b.Id == guid,
             cancellationToken);
     }
 
-    public Task UpdateAsync(BrandEntity brand)
+    public async Task<BrandEntity?> UpdateWithSaveChange(
+        Guid guid,
+        string? name,
+        string? description,
+        bool? enabled,
+        Approval? approval,
+        CancellationToken cancellationToken
+    )
     {
-        throw new NotImplementedException();
+        BrandEntity? brandEntity = await _catalogReplicaDbContext.Brand.FindAsync(guid, cancellationToken);
+
+        if (brandEntity == null) return null;
+
+        if (name != null) brandEntity.Name = name;
+        if (description != null) brandEntity.Description = description;
+        if (enabled != null) brandEntity.Enabled = (bool)enabled;
+        if (approval != null) brandEntity.Approval = (int)approval;
+
+        _catalogPrimaryDbContext.Brand.Update(brandEntity);
+        await _catalogPrimaryDbContext.SaveChangesAsync(cancellationToken);
+        return brandEntity;
     }
-    
+
+    public async Task<BrandEntity?> UpdateAsync(
+        Guid guid,
+        string? name,
+        string? description,
+        bool? enabled,
+        Approval? approval
+    )
+    {
+        BrandEntity? brandEntity = await _catalogReplicaDbContext.Brand.FindAsync(guid);
+
+        if (brandEntity == null) return null;
+
+        if (name != null) brandEntity.Name = name;
+        if (description != null) brandEntity.Description = description;
+        if (enabled != null) brandEntity.Enabled = (bool)enabled;
+        if (approval != null) brandEntity.Approval = (int)approval;
+
+        _catalogPrimaryDbContext.Brand.Update(brandEntity); // ESTO NO ACTUALIZA AUTOMATICAMENTE EN LA DB
+        return brandEntity;
+    }
+
     public async Task<BrandEntity?> DeleteWithSaveChange(Guid guid, CancellationToken cancellationToken = default)
     {
         // README: Quizas usar un AsNoTracking().FirstOrDefaultAsync()
-        BrandEntity? brandEntity = await _catalogReplicDbContext.Brand.FindAsync(guid, cancellationToken);
-        
+        BrandEntity? brandEntity = await _catalogReplicaDbContext.Brand.FindAsync(guid, cancellationToken);
+
         if (brandEntity == null) return null;
-        
+
         _catalogPrimaryDbContext.Brand.Remove(brandEntity); // No es asincrono
         await _catalogPrimaryDbContext.SaveChangesAsync(cancellationToken);
 
         return brandEntity;
     }
-    
+
     public async Task<BrandEntity?> DeleteAsync(Guid guid)
     {
-        BrandEntity? brandEntity = await _catalogReplicDbContext.Brand.FindAsync(guid);
+        BrandEntity? brandEntity = await _catalogReplicaDbContext.Brand.FindAsync(guid);
 
         if (brandEntity == null) return null;
-        
+
         _catalogPrimaryDbContext.Brand.Remove(brandEntity);
         return brandEntity;
     }
 
     public async Task<bool> BrandNameExistsAsync(string name)
     {
-        return await _catalogReplicDbContext.Brand.AnyAsync(b => b.Name.ToLower() == name);
+        return await _catalogReplicaDbContext.Brand.AnyAsync(b => b.Name.ToLower() == name);
     }
 }

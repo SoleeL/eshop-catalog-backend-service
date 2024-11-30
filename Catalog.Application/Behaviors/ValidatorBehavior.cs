@@ -1,6 +1,7 @@
 ﻿using Catalog.Application.Dtos;
 using Catalog.Application.Exceptions;
 using Catalog.Application.Extensions;
+using Catalog.Application.Validations.Utils;
 using FluentValidation;
 using FluentValidation.Results;
 using MediatR;
@@ -29,23 +30,24 @@ public class ValidatorBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest
         CancellationToken cancellationToken
     )
     {
-        var typeName = request.GetGenericTypeName();
+        string typeName = request.GetGenericTypeName();
 
         _logger.LogInformation("Validating {CommandQueryType}", typeName);
 
-        // IMPORTANT: FORMA SINCRONA
-        // List<ValidationFailure> failures = _validators
-        //     .Select(v => v.Validate(request))
-        //     .SelectMany(result => result.Errors)
-        //     .Where(error => error != null)
-        //     .ToList();
+        List<ValidationFailure> failures = new List<ValidationFailure>();
         
-        List<ValidationFailure> failures = (await Task.WhenAll(
-                _validators.Select(v => v.ValidateAsync(request, cancellationToken))
-            ))
-            .SelectMany(result => result.Errors)
-            .Where(error => error != null)
-            .ToList();
+        foreach (IValidator<TRequest> validator in _validators)
+        {
+            if (validator is IValidatorAsync)
+            {
+                ValidationResult result = await validator.ValidateAsync(request, cancellationToken);
+                failures.AddRange(result.Errors.Where(error => error != null));
+            }
+            else
+            {
+                failures.AddRange(validator.Validate(request).Errors.Where(error => error != null));
+            }
+        }
         
         if (failures.Any())
         {

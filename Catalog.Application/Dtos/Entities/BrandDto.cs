@@ -2,7 +2,7 @@ using Catalog.Domain.Enums;
 
 namespace Catalog.Application.Dtos.Entities;
 
-public class BrandResponseDto
+public class BrandDto
 {
     public string Id { get; set; }
     public string Name { get; set; }

@@ -8,7 +8,7 @@ using MediatR;
 
 namespace Catalog.Application.Queries.Brands;
 
-public class GetBrandByIdQuery : IRequest<BaseResponseDto<BrandResponseDto>>
+public class GetBrandByIdQuery : IRequest<BaseResponseDto<BrandDto>>
 {
     public Guid Guid { get; set; }
 
@@ -18,7 +18,7 @@ public class GetBrandByIdQuery : IRequest<BaseResponseDto<BrandResponseDto>>
     }
 }
 
-public class GetBrandByIdQueryHandler : IRequestHandler<GetBrandByIdQuery, BaseResponseDto<BrandResponseDto>>
+public class GetBrandByIdQueryHandler : IRequestHandler<GetBrandByIdQuery, BaseResponseDto<BrandDto>>
 {
     private readonly IBrandRepository _brandRepository;
 
@@ -27,7 +27,7 @@ public class GetBrandByIdQueryHandler : IRequestHandler<GetBrandByIdQuery, BaseR
         _brandRepository = brandRepository;
     }
 
-    public async Task<BaseResponseDto<BrandResponseDto>> Handle(
+    public async Task<BaseResponseDto<BrandDto>> Handle(
         GetBrandByIdQuery request,
         CancellationToken cancellationToken
     )
@@ -36,16 +36,16 @@ public class GetBrandByIdQueryHandler : IRequestHandler<GetBrandByIdQuery, BaseR
         
         BrandEntity? brandEntity = await _brandRepository.GetByIdAsync(request.Guid, cancellationToken);
         
-        BrandResponseDto brandResponseDto = CatalogMapper.Mapper.Map<BrandResponseDto>(brandEntity);
+        BrandDto brandDto = CatalogMapper.Mapper.Map<BrandDto>(brandEntity);
         
-        BaseResponseDto<BrandResponseDto> baseResponseDto = new BaseResponseDto<BrandResponseDto>(brandResponseDto);
+        BaseResponseDto<BrandDto> baseDto = new BaseResponseDto<BrandDto>(brandDto);
         
         if (brandEntity == null)
         {
-            baseResponseDto.Succcess = false;
-            baseResponseDto.Message = "Brand does not exist";
+            baseDto.Succcess = false;
+            baseDto.Message = "Brand does not exist";
         }
         
-        return baseResponseDto;
+        return baseDto;
     }
 }

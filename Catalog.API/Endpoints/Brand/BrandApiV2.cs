@@ -30,7 +30,7 @@ public static class BrandApiV2
     )
     {
         // README: Implementando creacion de marca utilizando idempotencia a traves del IdentifiedCommand
-        IdentifiedCommand<CreateBrandCommand, BaseResponseDto<BrandResponseDto>> requestCreateBrand = new IdentifiedCommand<CreateBrandCommand, BaseResponseDto<BrandResponseDto>>(createBrandCommand, requestGuid.Value);
+        IdentifiedCommand<CreateBrandCommand, BaseResponseDto<BrandDto>> requestCreateBrand = new IdentifiedCommand<CreateBrandCommand, BaseResponseDto<BrandDto>>(createBrandCommand, requestGuid.Value);
 
         catalogServices.Logger.LogInformation(
             "Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
@@ -39,7 +39,7 @@ public static class BrandApiV2
             requestCreateBrand.Id,
             requestCreateBrand);
 
-        BaseResponseDto<BrandResponseDto> brandResponseDto = await catalogServices.Mediator.Send(requestCreateBrand);
+        BaseResponseDto<BrandDto> brandResponseDto = await catalogServices.Mediator.Send(requestCreateBrand);
         
         catalogServices.Logger.LogInformation("CreateBrandCommand succeeded - BrandId: {BrandId}", brandResponseDto.Data.Id);
         return TypedResults.Created($"/api/brand/{brandResponseDto.Data.Id}",brandResponseDto);

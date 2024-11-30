@@ -1,4 +1,3 @@
-using Catalog.Application.Extensions;
 using Catalog.Application.Queries.Brands;
 using Catalog.Application.Validations.Utils;
 using Catalog.Domain.Entities;
@@ -12,17 +11,17 @@ public class GetPageBrandsQueryValidator : AbstractValidator<GetPageBrandsQuery>
 {
     readonly HashSet<string> _validFields = ValidFieldsUtil.GetValidFields<BrandEntity>();
     
-    public GetPageBrandsQueryValidator(ILogger<GetPageBrandsQueryValidator> logger)
+    public GetPageBrandsQueryValidator()
     {
         RuleFor(query => query.Approval)
             .Must(x => x == null || Enum.IsDefined(typeof(Approval), x)) // Solo valida si Approval no es nulo.
-            .When(query => query.Approval is not null)
-            .WithMessage($"Approval must be a valid value ({string.Join(", ", Enum.GetNames(typeof(Approval)))}) if provided");
+            .WithMessage($"Approval must be a valid value ({string.Join(", ", Enum.GetNames(typeof(Approval)))}) if provided")
+            .When(query => query.Approval is not null);
         
         RuleFor(query => query.Sort)
             .Must(x => x == null || x.All(field => _validFields.Contains(field)))
-            .When(query => query.Sort.Any())
-            .WithMessage($"Sort must be a valid value ({string.Join(", ", _validFields)}) if provided");
+            .WithMessage($"Sort must be a valid value ({string.Join(", ", _validFields)}) if provided")
+            .When(query => query.Sort.Any());
         
         RuleFor(query => query.Page).GreaterThanOrEqualTo(1).WithMessage("Page must be greater than 1");
         
