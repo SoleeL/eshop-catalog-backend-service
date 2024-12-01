@@ -2,9 +2,11 @@ using Catalog.Application.Dtos;
 using Catalog.Application.Dtos.Entities;
 using Catalog.Application.Exceptions;
 using Catalog.Application.Mappers;
+using Catalog.Application.Validations.Utils;
 using Catalog.Domain.Entities;
 using Catalog.Domain.Repositories;
 using Catalog.Domain.Shared;
+using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -13,13 +15,33 @@ namespace Catalog.Application.Commands.Brands;
 public class CreateBrandCommand : IRequest<BaseResponseDto<BrandDto>>
 {
     public string Name { get; }
-    public string Description { get; }
+    public string? Description { get; }
+}
 
-    // public CreateBrandCommand(string name, string description)
-    // {
-    //     Name = name;
-    //     Description = description;
-    // }
+public class CreateBrandCommandValidator : AbstractValidator<CreateBrandCommand>, IValidatorAsync
+{
+    public CreateBrandCommandValidator(IBrandRepository brandRepository, ILogger<CreateBrandCommandValidator> logger)
+    {
+        RuleFor(createBrand => createBrand.Name)
+            .Cascade(CascadeMode.Stop) // Detener al primer error y evitar multiples mensajes de validacion
+            .NotNull()
+            .WithMessage("Brand name cannot be null")
+            .NotEmpty()
+            .WithMessage("Brand name cannot be empty or only spaces")
+            .MaximumLength(100)
+            .WithMessage("Brand name must not exceed 100 characters")
+            .MustAsync(async (name, cancellation) => !await brandRepository.NameExists(name.ToLower()))
+            .WithMessage("Brand name already used");
+        
+        RuleFor(createBrand => createBrand.Description)
+            .Cascade(CascadeMode.Stop) // Detener al primer error y evitar multiples mensajes de validacion 
+            .NotNull()
+            .WithMessage("Brand description cannot be null")
+            .NotEmpty()
+            .WithMessage("Brand description cannot be empty")
+            .MaximumLength(255)
+            .WithMessage("Brand description must not exceed 255 characters");
+    }
 }
 
 public class CreateBrandCommandHandler : IRequestHandler<CreateBrandCommand, BaseResponseDto<BrandDto>>
@@ -71,12 +93,7 @@ public class CreateBrandCommandHandlerMultiRepository : IRequestHandler<CreateBr
 
     public async Task<BaseResponseDto<BrandDto>> Handle(CreateBrandCommand request, CancellationToken cancellationToken)
     {
-        // Crear la entidad BrandEntity -> TODO: Mapper de CreateBrandCommand a BrandEntity??
-        BrandEntity brandEntity = new BrandEntity
-        {
-            Name = request.Name,
-            Description = request.Description
-        };
+        BrandEntity brandEntity = CatalogMapper.Mapper.Map<BrandEntity>(request);
         
         try
         {

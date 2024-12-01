@@ -1,4 +1,3 @@
-using Catalog.Domain;
 using Catalog.Domain.Repositories;
 using Catalog.Domain.Shared;
 using Catalog.Infrastructure.Persistence;
@@ -38,6 +37,7 @@ public static class InfrastructureExtension
         // Registrar Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+        services.AddScoped<IBrandStateRepository, BrandStateRepository>();
         services.AddScoped<IBrandRepository, BrandRepository>();
     }
 }

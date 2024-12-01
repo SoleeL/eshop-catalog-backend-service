@@ -1,11 +1,9 @@
-using Catalog.Domain.Enums;
-
 namespace Catalog.Domain.Shared;
 
 public class QueryParameters // Quizas esta clase no es necesaria, y lo mejor es colocar todo en la QUERY y el HANDLER
 {
     public bool? Enabled { get; init; } // Filtration
-    public Approval? Approval { get; init; } // Filtration
+    
     
     public List<string> Category { get; init; } // Filtration
     public List<string> Brand { get; init; } // Filtration
@@ -45,7 +43,7 @@ public class QueryParameters // Quizas esta clase no es necesaria, y lo mejor es
     )
     {
         // Enabled = enabled ?? Enabled;
-        // Approval = Enum.TryParse(approval, out Approval parsedApproval) ? parsedApproval : Approval;
+        
         //
         // Category = ParseToList(category);
         // Brand = ParseToList(brand);

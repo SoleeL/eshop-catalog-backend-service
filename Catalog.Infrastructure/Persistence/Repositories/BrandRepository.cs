@@ -1,6 +1,5 @@
 using Catalog.Application.Extensions;
 using Catalog.Domain.Entities;
-using Catalog.Domain.Enums;
 using Catalog.Domain.Repositories;
 using Catalog.Infrastructure.Persistence.DbContexts;
 using Catalog.Infrastructure.Persistence.Utilities;
@@ -40,7 +39,7 @@ public class BrandRepository : IBrandRepository
     public async Task<(IEnumerable<BrandEntity>, int)> GetPageAsync(
         CancellationToken cancellationToken,
         bool? enabled,
-        Approval? approval,
+        int? stateId,
         string? search,
         List<string> sort,
         int page,
@@ -51,7 +50,7 @@ public class BrandRepository : IBrandRepository
 
         if (enabled != null) queryable = queryable.Where(b => b.Enabled == enabled);
 
-        if (approval != null) queryable = queryable.Where(b => b.Approval == (int)approval);
+        if (stateId != null) queryable = queryable.Where(b => b.StateId == (int)stateId);
 
         if (!string.IsNullOrEmpty(search))
         {
@@ -75,9 +74,9 @@ public class BrandRepository : IBrandRepository
         return (brands, totalCount);
     }
 
-    public Task<BrandEntity?> GetByIdAsync(Guid guid, CancellationToken cancellationToken = default)
+    public async Task<BrandEntity?> GetByIdAsync(Guid guid, CancellationToken cancellationToken = default)
     {
-        return _catalogReplicaDbContext.Brand.AsNoTracking().FirstOrDefaultAsync(
+        return await _catalogReplicaDbContext.Brand.AsNoTracking().FirstOrDefaultAsync(
             b => b.Id == guid,
             cancellationToken);
     }
@@ -87,7 +86,7 @@ public class BrandRepository : IBrandRepository
         string? name,
         string? description,
         bool? enabled,
-        Approval? approval,
+        int? stateId,
         CancellationToken cancellationToken
     )
     {
@@ -98,7 +97,7 @@ public class BrandRepository : IBrandRepository
         if (name != null) brandEntity.Name = name;
         if (description != null) brandEntity.Description = description;
         if (enabled != null) brandEntity.Enabled = (bool)enabled;
-        if (approval != null) brandEntity.Approval = (int)approval;
+        if (stateId != null) brandEntity.StateId = (int)stateId;
 
         _catalogPrimaryDbContext.Brand.Update(brandEntity);
         await _catalogPrimaryDbContext.SaveChangesAsync(cancellationToken);
@@ -110,7 +109,7 @@ public class BrandRepository : IBrandRepository
         string? name,
         string? description,
         bool? enabled,
-        Approval? approval
+        int? stateId
     )
     {
         BrandEntity? brandEntity = await _catalogReplicaDbContext.Brand.FindAsync(guid);
@@ -120,7 +119,7 @@ public class BrandRepository : IBrandRepository
         if (name != null) brandEntity.Name = name;
         if (description != null) brandEntity.Description = description;
         if (enabled != null) brandEntity.Enabled = (bool)enabled;
-        if (approval != null) brandEntity.Approval = (int)approval;
+        if (stateId != null) brandEntity.StateId = (int)stateId;
 
         _catalogPrimaryDbContext.Brand.Update(brandEntity); // ESTO NO ACTUALIZA AUTOMATICAMENTE EN LA DB
         return brandEntity;
@@ -149,7 +148,7 @@ public class BrandRepository : IBrandRepository
         return brandEntity;
     }
 
-    public async Task<bool> BrandNameExistsAsync(string name)
+    public async Task<bool> NameExists(string name)
     {
         return await _catalogReplicaDbContext.Brand.AnyAsync(b => b.Name.ToLower() == name);
     }

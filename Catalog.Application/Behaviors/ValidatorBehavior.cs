@@ -1,6 +1,4 @@
-﻿using Catalog.Application.Dtos;
-using Catalog.Application.Exceptions;
-using Catalog.Application.Extensions;
+﻿using Catalog.Application.Extensions;
 using Catalog.Application.Validations.Utils;
 using FluentValidation;
 using FluentValidation.Results;

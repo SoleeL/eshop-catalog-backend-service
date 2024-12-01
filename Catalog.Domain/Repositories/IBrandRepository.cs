@@ -1,6 +1,4 @@
 using Catalog.Domain.Entities;
-using Catalog.Domain.Enums;
-using Catalog.Domain.Shared;
 
 namespace Catalog.Domain.Repositories;
 
@@ -13,7 +11,7 @@ public interface IBrandRepository
     Task<(IEnumerable<BrandEntity>, int)> GetPageAsync(
         CancellationToken cancellationToken,
         bool? enabled,
-        Approval? approval,
+        int? stateId,
         string? search,
         List<string> sort,
         int page,
@@ -27,7 +25,7 @@ public interface IBrandRepository
         string? name,
         string? description,
         bool? enabled,
-        Approval? approval,
+        int? stateId,
         CancellationToken cancellationToken = default);
 
     Task<BrandEntity?> UpdateAsync(
@@ -35,12 +33,12 @@ public interface IBrandRepository
         string? name,
         string? description,
         bool? enabled,
-        Approval? approval);
+        int? stateId);
 
     Task<BrandEntity?> DeleteWithSaveChange(Guid guid, CancellationToken cancellationToken = default);
 
     Task<BrandEntity?> DeleteAsync(Guid guid);
 
     // Internal utils
-    Task<bool> BrandNameExistsAsync(string name);
+    Task<bool> NameExists(string name);
 }

@@ -13,7 +13,7 @@ public static class BrandApiV1
     {
         RouteGroupBuilder api = app.MapGroup("/api/brand").HasApiVersion(1.0);
 
-        api.MapPost("/", CreateBrandAsync);
+        api.MapPost("/", CreateBrand);
 
         api.MapGet("/", GetPageBrands);
 
@@ -28,7 +28,7 @@ public static class BrandApiV1
         return app;
     }
 
-    private static async Task<IResult> CreateBrandAsync(
+    private static async Task<IResult> CreateBrand(
         CancellationToken cancellationToken,
         [AsParameters] CatalogServices catalogServices,
         [FromBody] CreateBrandCommand createBrandCommand
@@ -57,7 +57,7 @@ public static class BrandApiV1
         CancellationToken cancellationToken,
         [AsParameters] CatalogServices catalogServices,
         [FromQuery] bool? enabled,
-        [FromQuery] string? approval,
+        [FromQuery] int? stateId,
         [FromQuery] string? search,
         [FromQuery] string? sort,
         [FromQuery] int? page,
@@ -66,7 +66,7 @@ public static class BrandApiV1
     {
         GetPageBrandsQuery getPageBrandsQuery = new GetPageBrandsQuery(
             enabled: enabled,
-            approval: approval,
+            state: stateId,
             search: search,
             sort: sort,
             page: page,

@@ -32,8 +32,6 @@ public class GetBrandByIdQueryHandler : IRequestHandler<GetBrandByIdQuery, BaseR
         CancellationToken cancellationToken
     )
     {
-        // 
-        
         BrandEntity? brandEntity = await _brandRepository.GetByIdAsync(request.Guid, cancellationToken);
         
         BrandDto brandDto = CatalogMapper.Mapper.Map<BrandDto>(brandEntity);

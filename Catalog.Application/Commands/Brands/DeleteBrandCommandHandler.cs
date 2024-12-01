@@ -48,8 +48,7 @@ public class DeleteBrandCommandHandler : IRequestHandler<DeleteBrandCommand, Bas
     }
 }
 
-public class
-    DeleteBrandCommandHandlerMultiRepository : IRequestHandler<DeleteBrandCommand, BaseResponseDto<BrandDto>>
+public class DeleteBrandCommandHandlerMultiRepository : IRequestHandler<DeleteBrandCommand, BaseResponseDto<BrandDto>>
 {
     private readonly IBrandRepository _brandRepository;
     private readonly IUnitOfWork _unitOfWork;

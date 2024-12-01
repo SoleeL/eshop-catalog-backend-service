@@ -1,9 +1,10 @@
 using Catalog.Application.Dtos;
 using Catalog.Application.Dtos.Entities;
 using Catalog.Application.Mappers;
+using Catalog.Application.Validations.Utils;
 using Catalog.Domain.Entities;
-using Catalog.Domain.Enums;
 using Catalog.Domain.Repositories;
+using FluentValidation;
 using MediatR;
 
 namespace Catalog.Application.Queries.Brands;
@@ -11,8 +12,7 @@ namespace Catalog.Application.Queries.Brands;
 public class GetPageBrandsQuery : BaseQuery<BaseResponseDto<IEnumerable<BrandDto>>>
 {
     public bool? Enabled { get; } // Filtration
-    public string? Approval { get; } // Filtration // Necesita valicacion
-
+    public int? State { get; set; } // Filtration // Necesita valicacion asincrona
     public string? Search { get; } // Search
 
     public List<string> Sort { get; } // Sorting -> ASC = "id", DESC = "-id"
@@ -22,7 +22,7 @@ public class GetPageBrandsQuery : BaseQuery<BaseResponseDto<IEnumerable<BrandDto
 
     public GetPageBrandsQuery(
         bool? enabled,
-        string? approval,
+        int? state,
         string? search,
         string? sort,
         int? page,
@@ -30,11 +30,32 @@ public class GetPageBrandsQuery : BaseQuery<BaseResponseDto<IEnumerable<BrandDto
     )
     {
         Enabled = enabled;
-        Approval = Capitalize(approval);
+        State = state;
         Search = search;
         Sort = ParseToList(sort);
         Page = page ?? Page;
         Size = size ?? Size;
+    }
+}
+
+public class GetPageBrandsQueryValidator : AbstractValidator<GetPageBrandsQuery>
+{
+    readonly HashSet<string> _validFields = ValidFieldsUtil.GetValidFields<BrandEntity>();
+    
+    public GetPageBrandsQueryValidator(IBrandStateRepository brandStateRepository)
+    {
+        RuleFor(getPageBrandsQuery => getPageBrandsQuery.State)
+            .MustAsync(async (stateId, cancellation) => stateId == null || !await brandStateRepository.StateExists(stateId.Value))
+            .WithMessage("State must be a valid value");
+        
+        RuleFor(query => query.Sort)
+            .Must(x => x == null || x.All(field => _validFields.Contains(field)))
+            .WithMessage($"Sort must be a valid value ({string.Join(", ", _validFields)}) if provided")
+            .When(query => query.Sort.Any());
+        
+        RuleFor(query => query.Page).GreaterThanOrEqualTo(1).WithMessage("Page must be greater than 1");
+        
+        RuleFor(query => query.Size).GreaterThanOrEqualTo(1).WithMessage("Size must be greater than 1");
     }
 }
 
@@ -55,7 +76,7 @@ public class GetPageBrandsQueryHandler : IRequestHandler<GetPageBrandsQuery, Bas
         (IEnumerable<BrandEntity> brandEntities, int totalItemCount) = await _brandRepository.GetPageAsync(
             cancellationToken,
             request.Enabled,
-            Enum.TryParse(request.Approval, out Approval approvalParsed) ? approvalParsed : null,
+            request.State,
             request.Search,
             request.Sort,
             request.Page,
