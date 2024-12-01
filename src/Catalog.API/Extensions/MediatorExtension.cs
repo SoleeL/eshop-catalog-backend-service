@@ -36,7 +36,7 @@ public static class MediatorExtension
         
         // Query de validacion con repository como Scoped para contexto de base de datos
         builder.Services.AddScoped<IValidator<CreateBrandCommand>, CreateBrandCommandValidator>();
-        builder.Services.AddSingleton<IValidator<GetPageBrandsQuery>, GetPageBrandsQueryValidator>();
+        builder.Services.AddScoped<IValidator<GetPageBrandsQuery>, GetPageBrandsQueryValidator>();
         builder.Services.AddScoped<IValidator<UpdateBrandCommand>, UpdateBrandCommandValidator>();
         
         // Agregar interpretes de los comandos y queries (CQRS)

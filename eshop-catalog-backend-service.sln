@@ -1,12 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.API", "Catalog.API\Catalog.API.csproj", "{6B730980-023E-41B2-9AF2-40ED192724CF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.API", "src\Catalog.API\Catalog.API.csproj", "{6B730980-023E-41B2-9AF2-40ED192724CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.Application", "Catalog.Application\Catalog.Application.csproj", "{701579C8-B014-45E4-AABC-E86BDD03CC0C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.Application", "src\Catalog.Application\Catalog.Application.csproj", "{701579C8-B014-45E4-AABC-E86BDD03CC0C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.Domain", "Catalog.Domain\Catalog.Domain.csproj", "{6339F0D0-CAB2-4EA1-B65B-790A3E75E42F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.Domain", "src\Catalog.Domain\Catalog.Domain.csproj", "{6339F0D0-CAB2-4EA1-B65B-790A3E75E42F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.Infrastructure", "Catalog.Infrastructure\Catalog.Infrastructure.csproj", "{FCCDA118-E295-4C5D-B1C4-455DD59DAD0A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.Infrastructure", "src\Catalog.Infrastructure\Catalog.Infrastructure.csproj", "{FCCDA118-E295-4C5D-B1C4-455DD59DAD0A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
