@@ -4,14 +4,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Catalog.Infrastructure.Persistence.Configurations;
 
-public class BrandStateEntityTypeConfiguration : BaseEntityTypeConfiguration<BrandStateEntity, int>
+public class BrandStateEntityTypeConfiguration : BaseEntityTypeConfiguration<BrandStateEntity>
 {
     public override void Configure(EntityTypeBuilder<BrandStateEntity> builder)
     {
         base.Configure(builder);
 
         builder.ToTable("brand_states");
-
+        
+        builder.HasKey(e => e.Id); // Primary key
         builder.Property(e => e.Id)
             .HasColumnName("id")
             .ValueGeneratedOnAdd();

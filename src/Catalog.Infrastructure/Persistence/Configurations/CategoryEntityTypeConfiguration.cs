@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Catalog.Infrastructure.Persistence.Configurations;
 
-public class CategoryEntityTypeConfiguration : BaseEntityTypeConfiguration<CategoryEntity, Guid>
+public class CategoryEntityTypeConfiguration : BaseEntityTypeConfiguration<CategoryEntity>
 {
     public override void Configure(EntityTypeBuilder<CategoryEntity> builder)
     {

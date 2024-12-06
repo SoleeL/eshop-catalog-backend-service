@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Catalog.Infrastructure.Persistence.Configurations;
 
-public class BrandEntityTypeConfiguration : BaseEntityTypeConfiguration<BrandEntity, Guid>
+public class BrandEntityTypeConfiguration : BaseEntityTypeConfiguration<BrandEntity>
 {
     public override void Configure(EntityTypeBuilder<BrandEntity> builder)
     {
@@ -31,14 +31,12 @@ public class BrandEntityTypeConfiguration : BaseEntityTypeConfiguration<BrandEnt
             .HasColumnName("enabled")
             .IsRequired()
             .HasDefaultValueSql("TRUE");
-
+        
+        builder.Property(b => b.StateId)
+            .HasColumnName("state_id");
         builder.HasOne(b => b.State)
-            // Relación uno a muchos
-            // BrandStateEntity no tiene una colección de BrandEntity
-            .WithMany()
-            // Clave foránea
+            .WithMany(s => s.Brands) // Define explícitamente la colección
             .HasForeignKey(b => b.StateId)
-            // Evitar eliminacion de un BrandStateEntity si hay un BrandEntity relacionado
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

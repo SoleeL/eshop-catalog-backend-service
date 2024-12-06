@@ -38,7 +38,7 @@ public class GetPageBrandsQuery : BaseQuery<BaseResponseDto<IEnumerable<BrandDto
     }
 }
 
-public class GetPageBrandsQueryValidator : AbstractValidator<GetPageBrandsQuery>
+public class GetPageBrandsQueryValidator : AbstractValidator<GetPageBrandsQuery>, IValidatorAsync
 {
     readonly HashSet<string> _validFields = ValidFieldsUtil.GetValidFields<BrandEntity>();
     

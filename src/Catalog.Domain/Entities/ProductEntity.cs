@@ -3,8 +3,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Catalog.Domain.Entities;
 
-public class ProductEntity : BaseEntity<Guid>
+public class ProductEntity : BaseEntity
 {
+    public Guid Id { get; set; }
     public string Name { get; set; }
     public string Description { get; set; }
     public decimal Price { get; set; }

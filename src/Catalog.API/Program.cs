@@ -1,4 +1,5 @@
 using Catalog.API.Endpoints.Brand;
+using Catalog.API.Endpoints.BrandState;
 using Catalog.API.Endpoints.Category;
 using Catalog.API.Endpoints.Product;
 using Catalog.API.Endpoints.Type;
@@ -37,6 +38,9 @@ app.UseStatusCodePages();
 
 app.UseHttpsRedirection();
 
+app.NewVersionedApi("Brand States")
+    .MapBrandStateApiV1();
+
 app.NewVersionedApi("Brand")
     .MapBrandApiV1()
     .MapBrandApiV2();
@@ -54,3 +58,5 @@ app.NewVersionedApi("Type")
     .MapTypeApiV2();
 
 app.Run();
+
+public partial class Program { } // Exponer el servicio a los test

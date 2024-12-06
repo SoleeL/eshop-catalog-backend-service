@@ -4,12 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Catalog.Infrastructure.Persistence.Configurations;
 
-public abstract class BaseEntityTypeConfiguration<T, TKey> : IEntityTypeConfiguration<T> where T : BaseEntity<TKey>
+public abstract class BaseEntityTypeConfiguration<T> : IEntityTypeConfiguration<T> where T : BaseEntity
 {
     public virtual void Configure(EntityTypeBuilder<T> builder)
     {
-        builder.HasKey(e => e.Id); // Primary key
-
+        // builder.HasKey(e => e.Id); // Primary key
         // builder.Property(e => e.Id)
         //     .HasColumnName("id")
         //     .HasDefaultValueSql("uuid_generate_v4()");
