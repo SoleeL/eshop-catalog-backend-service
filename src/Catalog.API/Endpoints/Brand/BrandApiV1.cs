@@ -36,7 +36,7 @@ public static class BrandApiV1
     {
         // README: Implementando creacion de marca sin idempotencia a traves del CreateBrandCommand
         BaseResponseDto<BrandDto> brandResponseDto = await catalogServices.Mediator.Send(
-            createBrandCommand, 
+            createBrandCommand,
             cancellationToken);
         // IMPORTANT: Sobre metodo .Send(
         // La definicion del metodo .Send( es:
@@ -64,14 +64,7 @@ public static class BrandApiV1
         [FromQuery] int? size
     )
     {
-        GetPageBrandsQuery getPageBrandsQuery = new GetPageBrandsQuery(
-            enabled: enabled,
-            state: stateId,
-            search: search,
-            sort: sort,
-            page: page,
-            size: size
-        );
+        GetPageBrandsQuery getPageBrandsQuery = new GetPageBrandsQuery(enabled, stateId, search, sort, page, size);
 
         BaseResponseDto<IEnumerable<BrandDto>> brandResponseDto = await catalogServices.Mediator.Send(
             getPageBrandsQuery,
@@ -98,17 +91,17 @@ public static class BrandApiV1
             cancellationToken);
 
         if (brandResponseDto.Succcess == false) return TypedResults.NotFound(brandResponseDto);
-        
+
         return TypedResults.Ok(brandResponseDto);
     }
-    
+
     // Respuestas esperadas para el método de actualización (PUT o PATCH).
     // Casos y códigos de estado:
     // 1.- Actualización exitosa: 200 OK - El recurso fue actualizado y se devuelve en la respuesta.
     // 2.- No encontrado: 404 Not Found - El recurso solicitado no existe.
     // 3.- Datos inválidos: 400 Bad Request - Los datos proporcionados en la solicitud no son válidos.
     // 4.- Conflicto: 409 Conflict - Violación de reglas del negocio o estado inconsistente.
-    private static async Task<IResult> UpdateBrandById(        
+    private static async Task<IResult> UpdateBrandById(
         CancellationToken cancellationToken,
         [AsParameters] CatalogServices catalogServices,
         [FromRoute] Guid guid,
@@ -121,10 +114,10 @@ public static class BrandApiV1
             cancellationToken);
 
         if (brandResponseDto.Succcess == false) return TypedResults.NotFound(brandResponseDto);
-        
+
         return TypedResults.Ok(brandResponseDto);
     }
-    
+
     private static async Task<IResult> DeleteBrandById(
         CancellationToken cancellationToken,
         [AsParameters] CatalogServices catalogServices,
@@ -138,7 +131,7 @@ public static class BrandApiV1
             cancellationToken);
 
         if (brandResponseDto.Succcess == false) return TypedResults.NotFound(brandResponseDto);
-        
+
         return TypedResults.NoContent();
     }
 }

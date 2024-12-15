@@ -12,7 +12,7 @@ namespace Catalog.Application.Queries.Brands;
 public class GetPageBrandsQuery : BaseQuery<BaseResponseDto<IEnumerable<BrandDto>>>
 {
     public bool? Enabled { get; } // Filtration
-    public int? State { get; set; } // Filtration // Necesita valicacion asincrona
+    public int? StateId { get; set; } // Filtration // Necesita valicacion asincrona
     public string? Search { get; } // Search
 
     public List<string> Sort { get; } // Sorting -> ASC = "id", DESC = "-id"
@@ -22,7 +22,7 @@ public class GetPageBrandsQuery : BaseQuery<BaseResponseDto<IEnumerable<BrandDto
 
     public GetPageBrandsQuery(
         bool? enabled,
-        int? state,
+        int? stateId,
         string? search,
         string? sort,
         int? page,
@@ -30,7 +30,7 @@ public class GetPageBrandsQuery : BaseQuery<BaseResponseDto<IEnumerable<BrandDto
     )
     {
         Enabled = enabled;
-        State = state;
+        StateId = stateId;
         Search = search;
         Sort = ParseToList(sort);
         Page = page ?? Page;
@@ -44,9 +44,9 @@ public class GetPageBrandsQueryValidator : AbstractValidator<GetPageBrandsQuery>
     
     public GetPageBrandsQueryValidator(IBrandStateRepository brandStateRepository)
     {
-        RuleFor(getPageBrandsQuery => getPageBrandsQuery.State)
-            .MustAsync(async (stateId, cancellation) => stateId == null || !await brandStateRepository.StateExists(stateId.Value))
-            .WithMessage("State must be a valid value");
+        RuleFor(getPageBrandsQuery => getPageBrandsQuery.StateId)
+            .MustAsync(async (stateId, cancellation) => stateId == null || await brandStateRepository.StateExists(stateId.Value))
+            .WithMessage("StateId must be a valid value");
         
         RuleFor(query => query.Sort)
             .Must(x => x == null || x.All(field => _validFields.Contains(field)))
@@ -76,7 +76,7 @@ public class GetPageBrandsQueryHandler : IRequestHandler<GetPageBrandsQuery, Bas
         (IEnumerable<BrandEntity> brandEntities, int totalItemCount) = await _brandRepository.GetPageAsync(
             cancellationToken,
             request.Enabled,
-            request.State,
+            request.StateId,
             request.Search,
             request.Sort,
             request.Page,
