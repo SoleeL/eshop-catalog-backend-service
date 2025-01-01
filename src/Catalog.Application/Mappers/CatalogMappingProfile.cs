@@ -1,0 +1,42 @@
+using AutoMapper;
+using Catalog.Application.Commands.Brands;
+using Catalog.Application.Dtos.Entities;
+using Catalog.Domain.Entities;
+using Microsoft.AspNetCore.SignalR;
+
+namespace Catalog.Application.Mappers;
+
+public class CatalogMappingProfile : Profile
+{
+    public CatalogMappingProfile()
+    {
+        CreateMap<BaseEntity, BaseDto>()
+            .ForMember(
+                destinationMember => destinationMember.CreatedAt,
+                memberOptions => memberOptions.MapFrom(sourceMember =>
+                    new DateTimeOffset(sourceMember.CreatedAt).ToUnixTimeMilliseconds())
+            )
+            .ForMember(
+                destinationMember => destinationMember.UpdatedAt,
+                memberOptions => memberOptions.MapFrom(sourceMember =>
+                    new DateTimeOffset(sourceMember.UpdatedAt).ToUnixTimeMilliseconds())
+            );
+
+        CreateMap<BrandStateEntity, BrandStateDto>()
+            .IncludeBase<BaseEntity, BaseDto>();
+
+        CreateMap<BrandEntity, BrandDto>()
+            .IncludeBase<BaseEntity, BaseDto>()
+            .ForMember(
+                destinationMember => destinationMember.Id,
+                memberOptions => memberOptions.MapFrom(sourceMember => sourceMember.Id.ToString())
+            );
+        
+        // Se puede simplificar el mapeo utilizando AutoMapper.
+        // La siguiente configuración es suficiente para mapear las propiedades coincidentes entre CreateBrandCommand y BrandEntity.
+        // Siempre que:
+        //      - Los nombres de las propiedades coincidan (como Name y Description).
+        //      - Las propiedades no coincidentes, como Enabled se inicializa de manera predeterminada en BrandEntity o más adelante en el flujo.
+        CreateMap<CreateBrandCommand, BrandEntity>();
+    }
+}

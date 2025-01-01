@@ -1,0 +1,59 @@
+﻿{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:2252",
+      "sslPort": 44362
+    }
+  },
+  "profiles": {
+    "http": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "launchUrl": "swagger",
+      "applicationUrl": "http://localhost:5257",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        
+        "ESHOP_CATALOG_DATABASE_HOST": "localhost",
+        "ESHOP_CATALOG_DATABASE_PORT": "5432",
+        "ESHOP_CATALOG_DATABASE_REPLICA_PORT": "5433",
+        "ESHOP_CATALOG_DATABASE_DB": "eshop-catalog-database",
+        "ESHOP_CATALOG_DATABASE_USER_READ_WRITE": "user_read_write",
+        "ESHOP_CATALOG_DATABASE_USER_READ_WRITE_PASSWORD": "user_read_write_123",
+        "ESHOP_CATALOG_DATABASE_USER_READ_ONLY": "user_read_only",
+        "ESHOP_CATALOG_DATABASE_USER_READ_ONLY_PASSWORD": "user_read_only_123"
+      }
+    },
+    "https": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "https://localhost:7169;http://localhost:5257",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+
+        "ESHOP_CATALOG_DATABASE_HOST": "localhost",
+        "ESHOP_CATALOG_DATABASE_PORT": "5432",
+        "ESHOP_CATALOG_DATABASE_REPLICA_PORT": "5433",
+        "ESHOP_CATALOG_DATABASE_DB": "eshop-catalog-database",
+        "ESHOP_CATALOG_DATABASE_USER_READ_WRITE": "user_read_write",
+        "ESHOP_CATALOG_DATABASE_USER_READ_WRITE_PASSWORD": "user_read_write_123",
+        "ESHOP_CATALOG_DATABASE_USER_READ_ONLY": "user_read_only",
+        "ESHOP_CATALOG_DATABASE_USER_READ_ONLY_PASSWORD": "user_read_only_123"
+      }
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
