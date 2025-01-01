@@ -12,8 +12,8 @@ namespace Catalog.Application.Commands.BrandStates;
 
 public class CreateBrandStateCommand : IRequest<BaseResponseDto<BrandStateDto>>
 {
-    public string Name { get; }
-    public string? Description { get; }
+    public string Name { set; get; }
+    public string? Description { set; get; }
 }
 
 public class CreateBrandStateCommandValidator : AbstractValidator<CreateBrandStateCommand>, IValidatorAsync
@@ -30,7 +30,7 @@ public class CreateBrandStateCommandValidator : AbstractValidator<CreateBrandSta
             .WithMessage("Brand name state must not exceed 50 characters")
             .MustAsync(async (name, cancellation) => !await brandStateRepository.NameExists(name.ToLower()))
             .WithMessage("Brand state name already used");
-        
+
         RuleFor(createBrand => createBrand.Description)
             .Cascade(CascadeMode.Stop) // Detener al primer error y evitar multiples mensajes de validacion 
             .NotNull()
@@ -63,7 +63,7 @@ public class CreateBrandStateCommandHandler : IRequestHandler<CreateBrandStateCo
     {
         // Crear la entidad BrandEntity
         BrandStateEntity brandStateEntity = CatalogMapper.Mapper.Map<BrandStateEntity>(request);
-        
+
         // Agregar la nueva marca a la base de datos
         await _brandStateRepository.AddWithSaveChange(brandStateEntity, cancellationToken);
 

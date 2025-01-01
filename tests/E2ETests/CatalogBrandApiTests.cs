@@ -2,11 +2,11 @@ using E2ETests.Utilities;
 
 namespace E2ETests;
 
-public class CatalogBrandAPITests : IClassFixture<E2EWebApplicationFactory<Program>>
+public class CatalogBrandApiTests : IClassFixture<E2EWebApplicationFactory<Program>>
 {
     private readonly HttpClient _client;
 
-    public CatalogBrandAPITests(E2EWebApplicationFactory<Program> factory)
+    public CatalogBrandApiTests(E2EWebApplicationFactory<Program> factory)
     {
         _client = factory.CreateClient();
     }

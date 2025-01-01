@@ -16,7 +16,7 @@ public class E2EWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         // Cargar variables de entorno:
-        EnvironmentVariablesHelper.SetEnvironmentVariablesFromLaunchSettings();
+        SetEnvironmentVariablesFromLaunchSettings();
         
         // AddInfrastructureServices
         builder.ConfigureServices(services =>
@@ -44,10 +44,7 @@ public class E2EWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup
             services.AddScoped<IBrandRepository, BrandRepository>();
         });
     }
-}
-
-public static class EnvironmentVariablesHelper
-{
+    
     public static void SetEnvironmentVariablesFromLaunchSettings(string profileName = "http")
     {
         // Ruta al archivo launchSettings.json
